@@ -1,0 +1,147 @@
+\begin{tikzpicture}
+	\ifdrawlegend
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			all axes={grid},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			legend={below, rows=2, right then down},
+			new legend entry={text={criterion:}, node style={black, xshift=-1.1cm}},
+			1={label in legend={text={\color{black}{1}}}},
+			2={label in legend={text={\color{black}{2}}}},
+			3={label in legend={text={\color{black}{3}}}},
+			new legend entry={text={}},
+			4={label in legend={text={\color{black}{4}}}},
+			5={label in legend={text={\color{black}{5}}}},
+			6={label in legend={text={\color{black}{6}}}}
+			];
+	\else
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			all axes={grid},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria
+			];
+	\fi
+	\node[below left] at (\xaxislength, \yaxislength) {%
+		\begin{tikzpicture}[scale=0.2]
+			%### ignore input error
+			\input{figures/ShapeD\dataD bicone}
+			%###
+		\end{tikzpicture}
+	};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\newcommand*{\datavisualizationDataSet}[1]{%
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			data/headline={x, y}
+			]
+			data [set=#1, read from file={\datadir/N\dataN D\dataD\datashape Cri#1Min1Vol\datavol.csv}];
+	}
+	\pgfmathparse{greater( \pinFxpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			6={pin in data={text={crit.\ 6}, when=x is \pinFxpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=6, read from file={\datadir/N\dataN D\dataD\datashape Cri6Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{6}
+	\fi
+	\pgfmathparse{greater( \pinExpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			5={pin in data={text={crit.\ 5}, when=x is \pinExpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=5, read from file={\datadir/N\dataN D\dataD\datashape Cri5Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{5}
+	\fi
+	\pgfmathparse{greater( \pinDxpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			4={pin in data={text={crit.\ 4}, when=x is \pinDxpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=4, read from file={\datadir/N\dataN D\dataD\datashape Cri4Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{4}
+	\fi
+	\pgfmathparse{greater( \pinCxpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			3={pin in data={text={crit.\ 3}, when=x is \pinCxpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=3, read from file={\datadir/N\dataN D\dataD\datashape Cri3Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{3}
+	\fi
+	\pgfmathparse{greater( \pinBxpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			2={pin in data={text={crit.\ 2}, when=x is \pinBxpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=2, read from file={\datadir/N\dataN D\dataD\datashape Cri2Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{2}
+	\fi
+	\pgfmathparse{greater( \pinAxpos, 0 )}
+	\ifnum\pgfmathresult=1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			1={pin in data={text={crit.\ 1\ifshowpinArrowFirst$\rightarrow$\fi}, when=x is \pinAxpos, pin length=\pinlen}},
+			data/headline={x, y}
+			]
+			data [set=1, read from file={\datadir/N\dataN D\dataD\datashape Cri1Min1Vol\datavol.csv}];
+	\else
+		\datavisualizationDataSet{1}
+	\fi
+\end{tikzpicture}
+

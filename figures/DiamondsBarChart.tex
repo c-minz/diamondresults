@@ -1,0 +1,70 @@
+\ifdrawdiamondlinklabels
+	\def\xaxisticksshift{-2mm}
+\else
+	\def\xaxisticksshift{0mm}
+\fi
+%### ignore input error
+\input{\datadir/D\dataD\dataname}
+%###
+\begin{tikzpicture}
+	\def\datasetcount{6}
+	\def\relbargroupwidth{0.8}
+	\pgfmathsetmacro\relbarwidth{1.0 * \relbargroupwidth / \datasetcount}
+	\pgfmathsetmacro\relbargroupoffset{( 1 - \relbargroupwidth ) / 2}
+	\pgfmathsetmacro\relbarpadding{( \relbargroupwidth / \datasetcount - \relbarwidth ) / 2}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\xbinwidth{\xbinwidth * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\barwidth{\relbarwidth * \xbinwidth}
+	\pgfmathsetmacro\xticksshift{\xticksshift * \xaxislength / \xaxisrange}
+	\pgfkeyssetvalue{/bar colors/1}{YorkOrange}
+	\pgfkeyssetvalue{/bar colors/2}{YorkYellow}
+	\pgfkeyssetvalue{/bar colors/3}{YorkGreen}
+	\pgfkeyssetvalue{/bar colors/4}{YorkBlue}
+	\pgfkeyssetvalue{/bar colors/5}{YorkDarkBlue}
+	\pgfkeyssetvalue{/bar colors/6}{YorkBlack}
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\ifdrawdiamondlinklabels\else number of center elements\fi}, ticks={step=\xaxisticksstep, node style={xshift=\xticksshift cm, yshift=\xaxisticksshift}}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+		all axes={grid},
+		visualize as line/.list={1, ..., \datasetcount},
+		legend={right},
+		new legend entry={text={\dataparam}, node style={xshift=-2em, align=left}},
+		new legend entry={text={}},
+		new legend entry={text={\legendlabel:}, node style={black, xshift=-2em}},
+		new legend entry={text={\legendlabelA}, visualizer in legend={\drawbarlegendlabel{1}}},
+		new legend entry={text={\legendlabelB}, visualizer in legend={\drawbarlegendlabel{2}}},
+		new legend entry={text={\legendlabelC}, visualizer in legend={\drawbarlegendlabel{3}}},
+		new legend entry={text={\legendlabelD}, visualizer in legend={\drawbarlegendlabel{4}}},
+		new legend entry={text={\legendlabelE}, visualizer in legend={\drawbarlegendlabel{5}}},
+		new legend entry={text={\legendlabelF}, visualizer in legend={\drawbarlegendlabel{6}}}
+		];
+	\ifdrawdiamondlinklabels
+		\begin{scope}[xshift=\xticksshift cm, yshift=\xaxisticksshift]
+			\input{figures/DiamondLabels}
+		\end{scope}
+	\fi
+	\node[below left] (subvolumesfig) at (\xaxislength, \yaxislength) {
+		\begin{tikzpicture}[scale=0.2]
+			\pgfsetcornersarced{\pgfpointorigin}
+			\input{figures/ShapeD2biconeSubvolumes}
+		\end{tikzpicture}
+	};
+	\node[fill=white, fill opacity=0.75, text opacity=1, scale=0.5] at (subvolumesfig) {$\dataDlabel$};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as line/.list={1, ..., \datasetcount},
+		data/format=ybar,
+		data/headline={x, y}
+		]
+		data [set=1, read from file={\datadir/N\dataN D\dataD\dataname Vol1Srlsum.csv}]
+		data [set=2, read from file={\datadir/N\dataN D\dataD\dataname Vol2Srlsum.csv}]
+		data [set=3, read from file={\datadir/N\dataN D\dataD\dataname Vol3Srlsum.csv}]
+		data [set=4, read from file={\datadir/N\dataN D\dataD\dataname Vol4Srlsum.csv}]
+		data [set=5, read from file={\datadir/N\dataN D\dataD\dataname Vol5Srlsum.csv}]
+		data [set=6, read from file={\datadir/N\dataN D\dataD\dataname Vol6Srlsum.csv}];
+\end{tikzpicture}

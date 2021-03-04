@@ -1,0 +1,13 @@
+\begin{scope}[shapeinset]
+	\draw ( 0, -0.47*\shapesize) coordinate (Past) 
+		-- ( 0.50*\shapesize,  0 ) coordinate (Right) 
+		-- ( 0,  0.47*\shapesize ) coordinate (Future) 
+		-- (-0.50*\shapesize,  0 ) coordinate (Left) 
+		-- cycle;
+	\draw (Future) 
+		-- (-0.28*\shapesize, -0.06*\shapesize ) coordinate (Front) 
+		-- (Past) 
+		-- ( 0.28*\shapesize,  0.06*\shapesize ) coordinate (Back) 
+		-- cycle;
+	\draw ( 0, 0 ) circle[x radius=0.497*\shapesize, y radius=0.07*\shapesize];
+\end{scope}

@@ -1,0 +1,82 @@
+\begin{tikzpicture}
+	\ifdrawlegend
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			all axes={grid},
+			visualize as smooth line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			legend={below, rows=2, right then down},
+			new legend entry={text={criterion:}, node style={black, xshift=-1.1cm}},
+			1={label in legend={text={\color{black}{1}}}},
+			2={label in legend={text={\color{black}{2}}}},
+			3={label in legend={text={\color{black}{3}}}},
+			new legend entry={text={}},
+			4={label in legend={text={\color{black}{4}}}},
+			5={label in legend={text={\color{black}{5}}}},
+			6={label in legend={text={\color{black}{6}}}}
+			];
+	\else
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			all axes={grid},
+			visualize as smooth line/.list={1, ..., 6},
+			style sheet=pref past criteria
+			];
+	\fi
+	\node[below left] at (\xaxislength, \yaxislength) {%
+		\begin{tikzpicture}[scale=0.2]
+			%### ignore input error
+			\input{figures/ShapeD\dataD bicone}
+			%###
+		\end{tikzpicture}
+	};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\ifdrawEvalues
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			style sheet=pref past criteria,
+			1={style={dotted}},
+			2={style={dotted}},
+			3={style={dotted}},
+			4={style={dotted}},
+			5={style={dotted}},
+			6={style={dotted}}
+			]
+			data [set=1, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri1Min1Vol\datavol ev.csv}]
+			data [set=2, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri2Min1Vol\datavol ev.csv}]
+			data [set=3, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri3Min1Vol\datavol ev.csv}]
+			data [set=4, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri4Min1Vol\datavol ev.csv}]
+			data [set=5, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri5Min1Vol\datavol ev.csv}]
+			data [set=6, headline={x, y}, read from file={\datadir/N\dataN D\dataD\datashape Cri6Min1Vol\datavol ev.csv}];
+	\fi
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=0, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as smooth line/.list={1, ..., 6},
+		style sheet=pref past criteria,
+		1={pin in data={text={crit.\ 1\ifshowpinArrowFirst$\rightarrow$\fi}, when=x is \pinAxpos, pin length=\pinlen}},
+		2={pin in data={text={crit.\ 2}, when=x is \pinBxpos, pin length=\pinlen}},
+		3={pin in data={text={crit.\ 3}, when=x is \pinCxpos, pin length=\pinlen}},
+		4={pin in data={text={crit.\ 4}, when=x is \pinDxpos, pin length=\pinlen}},
+		5={pin in data={text={crit.\ 5}, when=x is \pinExpos, pin length=\pinlen}},
+		6={pin in data={text={crit.\ 6}, when=x is \pinFxpos, pin length=\pinlen}},
+		data/headline={x, y}
+		]
+		data [set=1, read from file={\datadir/N\dataN D\dataD\datashape Cri1Min1Vol\datavol.csv}]
+		data [set=2, read from file={\datadir/N\dataN D\dataD\datashape Cri2Min1Vol\datavol.csv}]
+		data [set=3, read from file={\datadir/N\dataN D\dataD\datashape Cri3Min1Vol\datavol.csv}]
+		data [set=4, read from file={\datadir/N\dataN D\dataD\datashape Cri4Min1Vol\datavol.csv}]
+		data [set=5, read from file={\datadir/N\dataN D\dataD\datashape Cri5Min1Vol\datavol.csv}]
+		data [set=6, read from file={\datadir/N\dataN D\dataD\datashape Cri6Min1Vol\datavol.csv}];
+\end{tikzpicture}
+

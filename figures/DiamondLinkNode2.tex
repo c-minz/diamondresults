@@ -1,0 +1,7 @@
+\node[event] (eb) at ( 0.0*\CSunit,-1.1*\CSunit ) {};
+\node[inner sep=0.4mm] (e1) at ( 0.0*\CSunit, 0.0*\CSunit ) {\phantom{1}};
+\node[event] (et) at ( 0.0*\CSunit, 1.1*\CSunit ) {};
+\draw[causalrel] (eb) -- (e1.south west);
+\draw[causalrel] (eb) -- (e1.south east);
+\draw[causalrel] (e1.north west) -- (et);
+\draw[causalrel] (e1.north east) -- (et);

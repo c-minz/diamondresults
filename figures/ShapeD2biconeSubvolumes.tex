@@ -1,0 +1,9 @@
+\def\frameoffset{0.002*\shapesize}
+\def\framedecrease{0.05*\shapesize}
+\foreach \i / \subvolcolor in {0 / YorkOrange, 1 / YorkYellow, 2 / YorkGreen, 3 / YorkBlue, 4 / YorkDarkBlue, 5 / YorkBlack}
+	\draw[draw=\subvolcolor!100, fill=\subvolcolor!100, fill opacity=0.5] 
+		   ( 0,-0.5*\shapesize+2*\i*\framedecrease ) % bottom
+		-- ( 0.5*\shapesize-\i*\framedecrease, \i*\framedecrease-\i*\frameoffset ) % right
+		-- ( 0, 0.5*\shapesize-\i*\frameoffset ) % top
+		-- (-0.5*\shapesize+\i*\framedecrease, \i*\framedecrease-\i*\frameoffset ) % left
+		-- cycle;

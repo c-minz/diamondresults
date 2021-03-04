@@ -1,0 +1,58 @@
+\begin{tikzpicture}
+	\def\datasetcount{6}
+	\def\relbargroupwidth{0.8}
+	\pgfmathsetmacro\relbarwidth{1.0 * \relbargroupwidth / \datasetcount}
+	\pgfmathsetmacro\relbargroupoffset{( 1 - \relbargroupwidth ) / 2}
+	\pgfmathsetmacro\relbarpadding{( \relbargroupwidth / \datasetcount - \relbarwidth ) / 2}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\xbinwidth{\xbinwidth * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\barwidth{\relbarwidth * \xbinwidth}
+	\pgfmathsetmacro\xticksshift{\xticksshift * \xaxislength / \xaxisrange}
+	\pgfkeyssetvalue{/bar colors/1}{YorkBlack}
+	\pgfkeyssetvalue{/bar colors/2}{YorkDarkBlue}
+	\pgfkeyssetvalue{/bar colors/3}{YorkBlue}
+	\pgfkeyssetvalue{/bar colors/4}{YorkPurple}
+	\pgfkeyssetvalue{/bar colors/5}{YorkGreen}
+	\pgfkeyssetvalue{/bar colors/6}{YorkOrange}
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\dataxlabel}, ticks={major={node style={xshift=\xticksshift cm}}, step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+		all axes={grid},
+		visualize as line/.list={1, ..., \datasetcount},
+		legend={right},
+		new legend entry={text={\dataparam}, node style={black, xshift=-2em}},
+		new legend entry={text={}},
+		new legend entry={text={pref.\ future:}, node style={black, xshift=-2em}},
+		new legend entry={text={crit.\ 1}, visualizer in legend={\drawbarlegendlabel{1}}},
+		new legend entry={text={crit.\ 2}, visualizer in legend={\drawbarlegendlabel{2}}},
+		new legend entry={text={crit.\ 3}, visualizer in legend={\drawbarlegendlabel{3}}},
+		new legend entry={text={crit.\ 4}, visualizer in legend={\drawbarlegendlabel{4}}},
+		new legend entry={text={crit.\ 5}, visualizer in legend={\drawbarlegendlabel{5}}},
+		new legend entry={text={crit.\ 6}, visualizer in legend={\drawbarlegendlabel{6}}}
+		];
+	\node[below left] at (\xaxislength, \yaxislength) {%
+		\begin{tikzpicture}[scale=0.2]
+			%### ignore input error
+			\input{figures/D\dataD/ShapeD\dataD bicone}
+			%###
+		\end{tikzpicture}
+	};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as line/.list={1, ..., \datasetcount},
+		data/format=ybar,
+		data/headline={x, y}
+		]
+		data [set=1, read from file={\datadir/N\dataN D\dataD\datashape Cri1Min1Vol\datavol.csv}]
+		data [set=2, read from file={\datadir/N\dataN D\dataD\datashape Cri2Min1Vol\datavol.csv}]
+		data [set=3, read from file={\datadir/N\dataN D\dataD\datashape Cri3Min1Vol\datavol.csv}]
+		data [set=4, read from file={\datadir/N\dataN D\dataD\datashape Cri4Min1Vol\datavol.csv}]
+		data [set=5, read from file={\datadir/N\dataN D\dataD\datashape Cri5Min1Vol\datavol.csv}]
+		data [set=6, read from file={\datadir/N\dataN D\dataD\datashape Cri6Min1Vol\datavol.csv}];
+\end{tikzpicture}
+

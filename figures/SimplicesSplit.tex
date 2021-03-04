@@ -1,0 +1,81 @@
+\begin{tikzpicture}
+	\def\datasetcount{4}
+	\def\relbargroupwidth{0.8}
+	\pgfmathsetmacro\relbarwidth{1.0 * \relbargroupwidth / \datasetcount}
+	\pgfmathsetmacro\relbargroupoffset{( 1 - \relbargroupwidth ) / 2}
+	\pgfmathsetmacro\relbarpadding{( \relbargroupwidth / \datasetcount - \relbarwidth ) / 2}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\xbinwidth{\xbinwidth * \xaxislength / 2 / ( \xaxissplitfrom - \xaxismin )}
+	\pgfmathsetmacro\barwidth{\relbarwidth * \xbinwidth}
+	\pgfmathsetmacro\xticksshift{\xticksshift * \xaxislength / \xaxisrange}
+	\pgfkeyssetvalue{/bar colors/1}{YorkBlack}
+	\pgfkeyssetvalue{/bar colors/2}{YorkDarkBlue}
+	\pgfkeyssetvalue{/bar colors/3}{YorkBlue}
+	\pgfkeyssetvalue{/bar colors/4}{YorkGreen}
+	\def\splitoffset{1.0}
+	\datavisualization[
+		scientific axes=clean,
+		all axes={grid},
+		x axis={length=0.5*\xaxislength cm, min value=\xaxismin, max value=\xaxissplitfrom, grid={step=0.5}, ticks={major={node style={xshift=\xticksshift cm}, at={0,\xaxisticksstep,...,\xaxissplitfrom}}, step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}}
+		];
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=0.5*\xaxislength cm, min value=\xaxismin, max value=\xaxissplitfrom, ticks={none}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as line/.list={1, ..., 4},
+		data/format=ybarleft,
+		data/headline={x, y}
+		]
+		data [set=1, read from file={\datadir/N\dataN D\dataD\dataname Spd1.csv}]
+		data [set=2, read from file={\datadir/N\dataN D\dataD\dataname Spd2.csv}]
+		data [set=3, read from file={\datadir/N\dataN D\dataD\dataname Spd3.csv}]
+		data [set=4, read from file={\datadir/N\dataN D\dataD\dataname Spd4.csv}];
+	\begin{scope}[xshift=0.5*\xaxislength cm+\splitoffset cm]
+		\pgfmathsetmacro\xaxissecondtick{\xaxissplitto+\xaxisticksstep}
+		\datavisualization[
+			scientific axes=clean,
+			all axes={grid},
+			x axis={length=0.5*\xaxislength cm, min value=\xaxissplitto, max value=\xaxismax, grid={step=0.5}, ticks={major={node style={xshift=\xticksshift cm}, at={\xaxissplitto,\xaxissecondtick,...,\xaxismax}}, step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={}, ticks={none}, grid={step=\yaxisticksstep}},
+			visualize as line/.list={1, ..., 4},
+			legend={right},
+			new legend entry={text={\dataparam}, node style={xshift=-2em}},
+			new legend entry={text={}},
+			new legend entry={text={4D simplices}, visualizer in legend={\drawbarlegendlabel{4}}},
+			new legend entry={text={3D simplices}, visualizer in legend={\drawbarlegendlabel{3}}},
+			new legend entry={text={2D simplices}, visualizer in legend={\drawbarlegendlabel{2}}},
+			new legend entry={text={none}, visualizer in legend={\drawbarlegendlabel{1}}}
+			];
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=0.5*\xaxislength cm, min value=\xaxissplitto, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 4},
+			data/format=ybarright,
+			data/headline={x, y}
+			]
+			data [set=1, read from file={\datadir/N\dataN D\dataD\dataname Spd1.csv}]
+			data [set=2, read from file={\datadir/N\dataN D\dataD\dataname Spd2.csv}]
+			data [set=3, read from file={\datadir/N\dataN D\dataD\dataname Spd3.csv}]
+			data [set=4, read from file={\datadir/N\dataN D\dataD\dataname Spd4.csv}];
+		\fill[white] ( -0.1*\splitoffset, 0 ) rectangle ++( -0.8*\splitoffset, \yaxislength );
+		\node[below] at ( -0.5*\splitoffset, \yaxislength ) {%
+			\begin{tikzpicture}[scale=0.2]
+				%### ignore input error
+				\input{figures/ShapeD\dataD bicone}
+				%###
+			\end{tikzpicture}
+		};
+		\draw[gray, yshift=-0.206 cm] ( -1.0*\splitoffset, 0 ) 
+			-- ( -0.65*\splitoffset, 0 ) 
+			-- ( -0.55*\splitoffset,-0.4*\splitoffset ) 
+			-- ( -0.45*\splitoffset, 0.4*\splitoffset ) 
+			-- ( -0.35*\splitoffset, 0 ) 
+			-- ( 0, 0 );
+		\node[below=0.7cm] at ( -0.5*\splitoffset, 0 ) 
+			{causet fraction / \%};
+	\end{scope}
+\end{tikzpicture}

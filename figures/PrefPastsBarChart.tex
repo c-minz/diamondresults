@@ -1,0 +1,67 @@
+\begin{tikzpicture}
+	\def\datasetcount{6}
+	\def\relbargroupwidth{0.8}
+	\pgfmathsetmacro\relbarwidth{0.8 * \relbargroupwidth / \datasetcount}
+	\pgfmathsetmacro\relbargroupoffset{( 1 - \relbargroupwidth ) / 2}
+	\pgfmathsetmacro\relbarpadding{( \relbargroupwidth / \datasetcount - \relbarwidth ) / 2}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\xbinwidth{\xbinwidth * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\barwidth{\relbarwidth * \xbinwidth}
+	\pgfmathsetmacro\xticksshift{\xticksshift * \xaxislength / \xaxisrange}
+	\pgfkeyssetvalue{/bar colors/1}{YorkOrange}
+	\pgfkeyssetvalue{/bar colors/2}{YorkBlue}
+	\pgfkeyssetvalue{/bar colors/3}{YorkBlack}
+	\pgfkeyssetvalue{/bar colors/4}{YorkPurple}
+	\pgfkeyssetvalue{/bar colors/5}{YorkDarkBlue}
+	\pgfkeyssetvalue{/bar colors/6}{YorkGreen}
+	\ifdrawlegend
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, major={node style={xshift=\xticksshift cm}, at={\xaxismin, 1, 2, 3, 4 as $\geq 4$}}}, grid},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			visualize as line/.list={1, ..., \datasetcount},
+			legend={below},
+			new legend entry={text={criterion:}, node style={black, xshift=-2em}},
+			new legend entry={text={1}, visualizer in legend={\drawbarlegendlabel{1}}, node style={xshift=\legendtextshift}},
+			new legend entry={text={2}, visualizer in legend={\drawbarlegendlabel{2}}, node style={xshift=\legendtextshift}},
+			new legend entry={text={3}, visualizer in legend={\drawbarlegendlabel{3}}, node style={xshift=\legendtextshift}},
+			new legend entry={text={4}, visualizer in legend={\drawbarlegendlabel{4}}, node style={xshift=\legendtextshift}},
+			new legend entry={text={5}, visualizer in legend={\drawbarlegendlabel{5}}, node style={xshift=\legendtextshift}},
+			new legend entry={text={6}, visualizer in legend={\drawbarlegendlabel{6}}, node style={xshift=\legendtextshift}}
+			];
+	\else
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, major={node style={xshift=\xticksshift cm}, at={\xaxismin, 1, 2, 3, 4 as $\geq 4$}}}, grid},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\dataylabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+			visualize as line/.list={1, ..., \datasetcount}
+			];
+	\fi
+	\node[below left] at (\xaxislength, \yaxislength) {%
+		\begin{tikzpicture}[scale=0.2]
+			%### ignore input error
+			\input{figures/ShapeD\dataD bicone}
+			%###
+		\end{tikzpicture}
+	};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\foreach \thisdatavol/\dataformat/\errorcolor in {\datavol/ybar/black, 1/ybarcap/red, 6/ybarcap/black}{%
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1,...,\datasetcount},
+			data/format=\dataformat,
+			data/headline={x, y}
+			]
+			data [set=1, read from file={\datadir/N\dataN D\dataD\datashape Cri1Min1Vol\thisdatavol.csv}]
+			data [set=2, read from file={\datadir/N\dataN D\dataD\datashape Cri2Min1Vol\thisdatavol.csv}]
+			data [set=3, read from file={\datadir/N\dataN D\dataD\datashape Cri3Min1Vol\thisdatavol.csv}]
+			data [set=4, read from file={\datadir/N\dataN D\dataD\datashape Cri4Min1Vol\thisdatavol.csv}]
+			data [set=5, read from file={\datadir/N\dataN D\dataD\datashape Cri5Min1Vol\thisdatavol.csv}]
+			data [set=6, read from file={\datadir/N\dataN D\dataD\datashape Cri6Min1Vol\thisdatavol.csv}];
+	}
+\end{tikzpicture}
+% old order: 6, 3, 1, 4, 2, 5
+

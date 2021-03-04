@@ -1,0 +1,20 @@
+\def\xaxislinklabelstep{9/(\xaxismax-1)}
+\begin{scope}[xshift=-\xaxislinklabelstep*1cm, yshift=-0.5cm]
+	\ifnum\xaxisticksstep=1
+		\begin{scope}[xshift=\xaxislinklabelstep*1cm]
+			\input{figures/DiamondLinkNode1}
+		\end{scope}
+		\foreach \x in {2, 3, 4, ..., \xaxismax}{%
+			\begin{scope}[xshift=\xaxislinklabelstep*\x cm]
+				\input{figures/DiamondLinkNode2}
+			\end{scope}
+		}%
+	\else
+		\pgfmathsetmacro\foreachmax{int(\xaxismax/\xaxisticksstep)}
+		\foreach \x in {1, 2, 3, ..., \foreachmax}{%
+			\begin{scope}[xshift=\xaxisticksstep*\xaxislinklabelstep*\x cm]
+				\input{figures/DiamondLinkNode2}
+			\end{scope}
+		}%
+	\fi
+\end{scope}

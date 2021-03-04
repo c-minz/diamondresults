@@ -1,0 +1,56 @@
+\begin{tikzpicture}
+	\begin{scope}[xshift=-0.35*\xaxislength cm, yshift=-0.35*\xaxislength cm]
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, label={\dataxlabel}},
+			y axis={length=\xaxislength cm, label={\datazlabel}},
+			all axes={grid=none, min value=-\xaxismax, max value=\xaxismax, ticks={step=\xaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}}
+			];
+	\end{scope}
+	\draw[black!25] (0.65*\xaxislength, -0.35*\xaxislength) 
+		-- (\xaxislength, 0) 
+		node[midway, sloped, below=0.5ex, black, scale=0.75] {\dataylabel} 
+		-- (\xaxislength, \xaxislength) 
+		-- (0.65*\xaxislength, 0.65*\xaxislength) -- cycle;
+	\draw[black!25] (-0.35*\xaxislength, -0.35*\xaxislength) 
+		-- (0, 0) 
+		-- (0, \xaxislength) 
+		-- (-0.35*\xaxislength, 0.65*\xaxislength) -- cycle;
+	\draw[black!25] (0, 0) -- (\xaxislength, 0) 
+		-- (\xaxislength, \xaxislength) 
+		-- (0, \xaxislength) -- cycle;
+	\clip (-0.35*\xaxislength, -0.35*\xaxislength)
+		-- (0.65*\xaxislength, -0.35*\xaxislength) -- (\xaxislength, 0)
+		-- (\xaxislength, \xaxislength) -- (0, \xaxislength)
+		-- (-0.35*\xaxislength, 0.65*\xaxislength)
+		-- cycle;
+	\datavisualization[
+		xyz Cartesian cabinet,
+		x axis={visualize grid={direction axis=y axis}, visualize grid={direction axis=z axis}, label={\dataxlabel}, grid={many, step=\xaxisticksstep}},
+		y axis={visualize grid={direction axis=z axis}, visualize grid={direction axis=x axis}, label={\dataylabel}, grid={many, step=\xaxisticksstep}},
+		z axis={visualize grid={direction axis=x axis}, visualize grid={direction axis=y axis}, label={\datazlabel}, grid={many, step=\xaxisticksstep}},
+		all axes={length=\xaxislength cm, min value=-\xaxismax, max value=\xaxismax},
+		visualize as scatter/.list={1, ..., 6},
+% 		1={style={mark=*, mark size=\markersize, mark options={YorkOrange, opacity=\markeropacity}}}, 
+% 		2={style={mark=*, mark size=\markersize, mark options={YorkYellow, opacity=\markeropacity}}},
+		3={style={mark=*, mark size=\markersize, mark options={YorkGreen, opacity=\markeropacity}}}, 
+		4={style={mark=*, mark size=\markersize, mark options={YorkBlue, opacity=\markeropacity}}}, 
+		5={style={mark=*, mark size=\markersize, mark options={YorkDarkBlue, opacity=\markeropacity}}}, 
+		6={style={mark=*, mark size=\markersize, mark options={YorkBlack, opacity=\markeropacity}}}, 
+		data/headline={x, y, z}
+		]
+% 		data [set=1, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol1Scatter.csv}] 
+% 		data [set=2, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol2Scatter.csv}]
+		data [set=3, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol3Scatter.csv}]
+		data [set=4, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol4Scatter.csv}]
+		data [set=5, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol5Scatter.csv}]
+		data [set=6, read from file={\datadir/N\dataN D\dataD\datashape Cri\dataCri Min1Vol6Scatter.csv}];
+	\node[below left] (subvolumesfig) at (\xaxislength, \xaxislength) {
+		\begin{tikzpicture}[scale=0.2]
+			\pgfsetcornersarced{\pgfpointorigin}
+			\input{figures/ShapeD2biconeSubvolumes}
+		\end{tikzpicture}
+	};
+	\node[fill=white, fill opacity=0.75, text opacity=1, scale=0.5] at (subvolumesfig) {$\dataDlabel$};
+\end{tikzpicture}
+

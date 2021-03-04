@@ -1,0 +1,54 @@
+\ifdrawdiamondlinklabels
+	\def\xaxisticksshift{-2mm}
+\else
+	\def\xaxisticksshift{0mm}
+\fi
+\begin{tikzpicture}
+	\def\datasetcount{3}
+	\def\relbargroupwidth{0.8}
+	\pgfmathsetmacro\relbarwidth{1.0 * \relbargroupwidth / \datasetcount}
+	\pgfmathsetmacro\relbargroupoffset{( 1 - \relbargroupwidth ) / 2}
+	\pgfmathsetmacro\relbarpadding{( \relbargroupwidth / \datasetcount - \relbarwidth ) / 2}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\xbinwidth{\xbinwidth * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\barwidth{\relbarwidth * \xbinwidth}
+	\pgfmathsetmacro\xticksshift{\xticksshift * \xaxislength / \xaxisrange}
+	\pgfkeyssetvalue{/bar colors/1}{D2Color}
+	\pgfkeyssetvalue{/bar colors/2}{D3Color}
+	\pgfkeyssetvalue{/bar colors/3}{D4Color}
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\dataxlabel}, ticks={step=\xaxisticksstep, node style={xshift=\xticksshift cm, yshift=\xaxisticksshift}, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\xaxisticksprecision}}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+		all axes={grid},
+		visualize as line/.list={1, ..., \datasetcount},
+		legend={below},
+		new legend entry={text={dimension $d$:}, node style={xshift=-2em, align=left}},
+		1={style={D2Color}, label in legend={text={$1 + 1$}}},
+		2={style={D3Color}, label in legend={text={$1 + 2$}}},
+		3={style={D4Color}, label in legend={text={$1 + 3$}}}
+		];
+	\ifdrawdiamondlinklabels
+		\begin{scope}[xshift=\xticksshift cm, yshift=\xaxisticksshift]
+			\input{figures/DiamondLabels}
+		\end{scope}
+	\fi
+	\input{figures/ShapesGeodesicStacked}
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as line/.list={1, ..., \datasetcount},
+		style sheet=dimensions,
+		1={pin in data={text={$1 + 1$}, when=x is \pinAxpos, pin length=\pinlen}},
+		2={pin in data={text={$1 + 2$}, when=x is \pinBxpos, pin length=\pinlen}},
+		3={pin in data={text={$1 + 3$}, when=x is \pinCxpos, pin length=\pinlen}},
+		data/format=\dataformat,
+		data/headline={x, y}
+		]
+		data [set=1, read from file={\datadir/N\dataN D2\dataname.csv}]
+		data [set=2, read from file={\datadir/N\dataN D3\dataname.csv}]
+		data [set=3, read from file={\datadir/N\dataN D4\dataname.csv}];
+\end{tikzpicture}

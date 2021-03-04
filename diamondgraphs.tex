@@ -1,0 +1,553 @@
+%% Copyright 2021 by C. Minz
+% This file contains the LaTeX code to generate standalone plots for 
+% the simulation results obtained from the sprinkling simulations, 
+% see https://github.com/c-minz/diamondsprinkling
+% 
+% Before plotting, data files are generated with the MATLAB code 
+% provided in the ``diamondsprinkling'' repository, and the simple 
+% data point tables have to be extracted from the resulting data 
+% files using the MATLAB code in this repository.
+% 
+% The header of this file is rather long, the main content starts 
+% at \begin{document}.
+
+%% ##################################################################
+%% Package and TikZ libraries:
+%% ------------------------------------------------------------------
+\documentclass[12pt,tikz]{standalone}
+\usepackage[english]{babel}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{%
+	datavisualization,
+	datavisualization.formats.functions
+}
+\usepackage{colorYork}
+
+%% ##################################################################
+%% Graphic parameters, TikZ settings, style sheets:
+%% ------------------------------------------------------------------
+\pgfkeys{/pgf/number format/.cd,1000 sep={}} % remove 1000-th sep.
+\newif\ifdrawdiamondlinklabels
+\newif\ifdrawbarlabel
+\newif\ifdrawlegend
+\newif\ifdrawEvalues
+\def\xaxislength{9.0}
+\def\yaxislength{5.5}
+\def\CSunit{0.300cm}
+\def\shapesize{6cm}
+\tikzset{event/.style={circle, fill=black, inner sep=0pt, minimum size=0.9mm}}
+\tikzset{causalrel/.style={thick, black!50!white}}
+\tikzset{shapeinset/.style={draw=black!25!white, thin}}
+%% These style sheets require the brand colour scheme of the 
+%% University of York, defined in the file ``colorYork.sty''.
+\pgfdvdeclarestylesheet{pref past criteria}{
+	1/.style={YorkOrange},
+	2/.style={YorkBlue},
+	3/.style={YorkBlack},
+	4/.style={YorkPurple},
+	5/.style={YorkDarkBlue},
+	6/.style={YorkGreen},
+	default style/.style={black}
+}
+\colorlet{D2Color}{YorkDarkBlue}
+\colorlet{D3Color}{YorkDarkBlue!20!YorkBlue}
+\colorlet{D4Color}{YorkGreen}
+\pgfdvdeclarestylesheet{dimensions}{
+	1/.style={D2Color},
+	2/.style={D3Color},
+	3/.style={D4Color},
+	default style/.style={YorkBlack}
+}
+
+%% ##################################################################
+%% Data formats including modification for bar plots:
+%% ------------------------------------------------------------------
+%% data format to select points in x-y-ranges:
+\def\rangexmin{0.99}
+\def\rangexmax{10.0}
+\def\rangeymin{1.0}
+\def\rangeymax{2.5}
+\pgfdeclaredataformat{inrange}
+{}{}{#1, #2}{
+\pgfmathparse{and( and( greater( #1, \rangexmin ), notgreater( #1, \rangexmax ) ), and( greater( #2, \rangeymin ), notgreater( #2, \rangeymax ) ) )}
+\ifnum\pgfmathresult=1
+	\pgfkeyssetvalue{/data point/x}{#1}
+	\pgfkeyssetvalue{/data point/y}{#2}
+	\pgfdatapoint
+\else
+	\relax
+\fi
+}{}{}
+%% data format to cut off large x values:
+\pgfdeclaredataformat{xcutoff}
+{}{}{#1, #2}{
+\pgfmathparse{notgreater( #1, \xaxismax + 1 )}
+\ifnum\pgfmathresult=1
+	\pgfkeyssetvalue{/data point/x}{#1}
+	\pgfkeyssetvalue{/data point/y}{#2}
+	\pgfdatapoint
+\else
+	\relax
+\fi
+}{}{}
+%% data format to cut off large x values, strictly positive y values:
+\pgfdeclaredataformat{xcutoffypos}
+{}{}{#1, #2}{
+\pgfmathparse{and(notgreater( #1, \xaxismax + 1 ), greater( #2, 1 ) )}
+\ifnum\pgfmathresult=1
+	\pgfkeyssetvalue{/data point/x}{#1}
+	\pgfkeyssetvalue{/data point/y}{#2}
+	\pgfdatapoint
+\else
+	\relax
+\fi
+}{}{}
+%% data format to draw lines for expectation values:
+\pgfdeclaredataformat{drawEvalues}
+{}{}{#1, #2}{
+\ifdrawEvalues
+	\pgfkeyssetvalue{/data point/x}{#2}
+	\pgfkeyssetvalue{/data point/y}{0}
+	\pgfdatapoint
+	\pgfkeyssetvalue{/data point/x}{#2}
+	\pgfkeyssetvalue{/data point/y}{\yaxismax}
+	\pgfdatapoint
+\fi
+}{}{}
+%% data format to draw bar chart:
+\newcommand*{\drawbar}[4][0]{%
+	\draw[\pgfkeysvalueof{/bar colors/#2}, thin, fill, fill opacity=0.5] 
+		( #3, #1 ) rectangle +( \barwidth, #4 );%
+}
+\pgfplotsset{/pgf/number format/barlabelnumber/.style={fixed,precision=3}}
+\newcommand*{\drawbarlabel}[2]{%
+	\ifdrawbarlabel
+		\pgfmathparse{and( greater( #2, \barlabeltopmin ), notgreater( #2, \barlabeltopmax ) )}
+		\ifnum\pgfmathresult=1
+			\node[scale=\barlabelscale, rotate=90, left, white] 
+				at ( \xresult + \baroffset + 0.5 * \barwidth, \yresult ) {\pgfmathprintnumber[barlabelnumber]{#2}};
+		\fi
+		\pgfmathparse{and( greater( #2, \barlabelbotmin ), notgreater( #2, \barlabelbotmax ) )}
+		\ifnum\pgfmathresult=1
+			\node[scale=\barlabelscale, rotate=90, right, \pgfkeysvalueof{/bar colors/#1}] 
+				at ( \xresult + \baroffset + 0.5 * \barwidth, \yresult ) {\pgfmathprintnumber[barlabelnumber]{#2}};
+		\fi
+	\fi
+}
+\newcommand*{\drawbarlegendlabel}[1]{%
+	\pgfmathsetmacro\iloopmax{int( 0.6 / \barwidth / 1.5 - 1 )}%
+	\pgfmathsetmacro\ibarscale{1 / ( \iloopmax + 1 )}%
+	\foreach \iloop in { 0, ..., \iloopmax }{%
+		\drawbar[-0.1]{#1}{-0.6 + 1.5 * \iloop * \barwidth}{0.3 - 0.3 * \iloop * \ibarscale}%
+	}
+}
+\pgfdeclaredataformat{ybar}
+{}{}{#1, #2}{
+\pgfmathparse{and( greater( #1, \xaxismin ), notgreater( #1, \xaxismax ) )}
+\ifnum\pgfmathresult=1
+	\pgfmathsetmacro\barindex{int( \pgfkeysvalueof{/data point/set} ) - 1}
+	\pgfmathsetmacro\baroffset{( -0.5 + \relbargroupoffset + \relbarpadding + \barindex * ( 2 * \relbarpadding + \relbarwidth ) ) * \xbinwidth}
+	\pgfmathsetmacro\xresult{( #1 - \xaxismin ) * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\yresult{min( #2 * \yaxislength / \yaxismax, \yaxislength )}
+	\pgfmathsetmacro\barlabel{int( \pgfkeysvalueof{/data point/set} )} % \barindex + 1
+	\drawbar{\barlabel}{\xresult+\baroffset}{\yresult}
+	\drawbarlabel{\barlabel}{#2}
+\fi
+}{}{}
+\pgfdeclaredataformat{ybarcap}
+{}{}{#1, #2}{
+\pgfmathparse{and( greater( #1, \xaxismin ), notgreater( #1, \xaxismax ) )}
+\ifnum\pgfmathresult=1
+	\pgfmathsetmacro\barindex{int( \pgfkeysvalueof{/data point/set} ) - 1}
+	\pgfmathsetmacro\baroffset{( -0.5 + \relbargroupoffset + \relbarpadding + \barindex * ( 2 * \relbarpadding + \relbarwidth ) ) * \xbinwidth}
+	\pgfmathsetmacro\xresult{( #1 - \xaxismin ) * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\yresult{min( #2 * \yaxislength / \yaxismax, \yaxislength )}
+	\pgfmathsetmacro\barlabel{int( \pgfkeysvalueof{/data point/set} )} % \barindex + 1
+	\draw[\errorcolor, thick, opacity=0.9] 
+		( \xresult+\baroffset-\barwidth/5, \yresult ) -- +( \barwidth/5, 0 );
+	\draw[\errorcolor, very thick, opacity=0.15] 
+		( \xresult+\baroffset, \yresult ) -- +( \barwidth, 0 );
+	\draw[\errorcolor, thick, opacity=0.9] 
+		( \xresult+\baroffset+\barwidth, \yresult ) -- +( \barwidth/5, 0 );
+\fi
+}{}{}
+\pgfdeclaredataformat{ybarleft}
+{}{}{#1, #2}{
+\pgfmathparse{and( greater( #1, \xaxismin ), notgreater( #1, \xaxissplitfrom ) )}
+\ifnum\pgfmathresult=1
+	\pgfmathsetmacro\barindex{int( \pgfkeysvalueof{/data point/set} ) - 1}
+	\pgfmathsetmacro\baroffset{( -0.5 + \relbargroupoffset + \relbarpadding + \barindex * ( 2 * \relbarpadding + \relbarwidth ) ) * \xbinwidth}
+	\pgfmathsetmacro\xresult{( #1 - \xaxismin ) * \xaxislength / 2 / ( \xaxissplitfrom - \xaxismin )}
+	\pgfmathsetmacro\yresult{min( #2 * \yaxislength / \yaxismax, \yaxislength )}
+	\pgfmathsetmacro\barlabel{int( \pgfkeysvalueof{/data point/set} )} % \barindex + 1
+	\drawbar{\barlabel}{\xresult+\baroffset}{\yresult}
+	\drawbarlabel{\barlabel}{#2}
+\fi
+}{}{}
+\pgfdeclaredataformat{ybarright}
+{}{}{#1, #2}{
+\pgfmathparse{and( greater( #1, \xaxissplitto ), notgreater( #1, \xaxismax ) )}
+\ifnum\pgfmathresult=1
+	\pgfmathsetmacro\barindex{int( \pgfkeysvalueof{/data point/set} ) - 1}
+	\pgfmathsetmacro\baroffset{( -0.5 + \relbargroupoffset + \relbarpadding + \barindex * ( 2 * \relbarpadding + \relbarwidth ) ) * \xbinwidth}
+	\pgfmathsetmacro\xresult{( #1 - \xaxissplitto ) * \xaxislength / 2 / ( \xaxismax - \xaxissplitto )}
+	\pgfmathsetmacro\yresult{min( #2 * \yaxislength / \yaxismax, \yaxislength )}
+	\pgfmathsetmacro\barlabel{int( \pgfkeysvalueof{/data point/set} )} % \barindex + 1
+	\drawbar{\barlabel}{\xresult+\baroffset}{\yresult}
+	\drawbarlabel{\barlabel}{#2}
+\fi
+}{}{}
+\pgfdeclaredataformat{ybarcombined}
+{}{}{#1, #2}{
+\ifnum\dataD<\animatedD
+	\pgfmathsetmacro\thisvalue{#2}
+\else
+	\def\thisvalue{0}
+\fi
+\ifnum\dataD=\animatedD
+	\pgfmathsetmacro\thisvalue{\animationscaling*#2}
+\fi
+\pgfmathparse{equal( int( #1 ), 1 )}
+\ifnum\pgfmathresult=1
+	\pgfmathsetmacro\barindex{int( \pgfkeysvalueof{/data point/set} ) - 1}
+	\pgfmathsetmacro\baroffset{( -0.5 + \relbargroupoffset + \relbarpadding + \barindex * ( 2 * \relbarpadding + \relbarwidth ) ) * \xbinwidth + ( \dataD - 1 ) * \xbinwidth}
+	\pgfmathsetmacro\xresult{( #1 - \xaxismin ) * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\yresult{min( \thisvalue * \yaxislength / \yaxismax, \yaxislength )}
+	\pgfmathsetmacro\barlabel{int( \pgfkeysvalueof{/data point/set} )} % \barindex + 1
+	\drawbar{\barlabel}{\xresult+\baroffset}{\yresult}
+	\drawbarlabel{\barlabel}{\thisvalue}
+\fi
+}{}{}
+
+%% ##################################################################
+%% Individual plot parameters and plots:
+%% ------------------------------------------------------------------
+%% Usage: In order to obtain individual plot files, uncomment only 
+%%        the header (after a ###### title comment) and the code 
+%%        block of the individual diagram, as shown with one 
+%         uncommented example below. Change parameters like the 
+%%        dimension of the plotted results by adjusting the main 
+%%        section under the title, for example by changing 
+%%        \def\dataDlabel{1 + 1}
+%%        for 2-dimensional data to 
+%%        \def\dataDlabel{1 + 2}
+%%        for 3-dimensional data.
+\begin{document}
+
+%% ######
+%% ------ plot for cardinality of rank 2 past:
+% \pgfplotsset{/pgf/number format/barlabelnumber/.style={fixed,precision=1}}
+% \def\dataN{6000}
+% \def\dataxlabel{observation region $U_{i}$}
+% \def\dataylabel{expected cardinality}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+% \def\dataname{bicone}
+% \def\legendtextshift{-0.4em}
+% \def\xaxismin{0}\def\xaxismax{5.99}\def\xbinwidth{1}
+% \def\xticksshift{0.5}\def\xaxisticksstep{1}\def\xaxisticksprecision{0}
+% \def\yaxismin{0}\def\yaxismax{2100}
+% \def\yaxisticksstep{300}\def\yaxisticksprecision{0}
+% \def\datadir{data/Diamonds}
+% \drawbarlabeltrue\def\barlabelscale{0.65}
+% \def\barlabelbotmin{-1}\def\barlabelbotmax{1600}
+% \def\barlabeltopmin{1600}\def\barlabeltopmax{\yaxismax}
+% \input{figures/Rank2PastBarChart}
+
+%% ######
+%% ------ plots for pref. pasts:
+\def\dataN{6000}
+\def\dataDlabel{1 + 1}
+\pgfmathsetmacro\dataD{int(\dataDlabel)}
+\ifnum\dataD<4
+\drawlegendfalse
+\else
+\drawlegendtrue
+\fi
+\def\datavol{3}
+\pgfmathsetmacro\dataObsRegion{int(\datavol - 1)}
+\def\datashape{bicone}
+\def\dataylabel{probability / \%}
+\def\dataformat{xcutoff}
+\def\dataparam{$\langle n \rangle = \dataN$}
+%% --- plot number of pref. pasts:
+% \drawbarlabeltrue\def\barlabelscale{0.65}
+% \def\barlabelbotmin{-1}\def\barlabelbotmax{80}
+% \def\barlabeltopmin{80}\def\barlabeltopmax{100}
+% \drawEvaluesfalse
+% \def\xbinwidth{1}
+% \def\xaxismin{1}\def\xticksshift{0.5}
+% \def\datadir{data/PrefPasts}
+% \def\dataxlabel{cardinality}
+% \def\xaxismax{4.99}\def\xaxisticksstep{1}\def\xaxisticksprecision{0}
+% \def\yaxismax{100}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
+% \def\legendtextshift{-0.85em}
+% \input{figures/PrefPastsBarChart}
+%% --- plot proper times of pref. pasts:
+\drawEvaluesfalse
+\def\datadir{data/ProperTimes}
+\def\dataylabel{probability density}
+\def\xaxismax{6.5}\def\xaxisticksstep{0.50}\def\xaxisticksprecision{1}
+\def\yaxismax{6.5}\def\yaxisticksstep{0.50}\def\yaxisticksprecision{1}
+\def\dataxlabel{proper time / $\sqrt[\dataD]{1 / \rho}$}
+\newif\ifshowpinArrowFirst
+\def\pinlen{1.8ex}
+\ifcase\dataD
+\or\or
+\def\pinAxpos{5.95}\def\pinBxpos{1.2}\def\pinCxpos{2.3}
+\def\pinDxpos{4.7}\def\pinExpos{3.7}\def\pinFxpos{3.2}\showpinArrowFirsttrue
+\or
+\def\pinAxpos{5.95}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
+\def\pinDxpos{4.5}\def\pinExpos{3.6}\def\pinFxpos{3.25}\showpinArrowFirsttrue
+\or
+\def\pinAxpos{5.5}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
+\def\pinDxpos{5.5}\def\pinExpos{4.5}\def\pinFxpos{3.3}\showpinArrowFirstfalse
+\fi
+\input{figures/PrefPasts}
+%% --- plot unit hyperboloid distribution of pref. pasts:
+% \def\dataparam{obs.\ region $U_{\dataObsRegion}$}
+% \def\dataxlabel{$\rho_{\dataDlabel}$}
+% \def\datadir{data/UnitHyperboloid}
+% \def\dataylabel{probability density}
+% \def\xaxismax{15.0}\def\xaxisticksstep{1.0}\def\xaxisticksprecision{0}
+% \def\yaxismax{5.0}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
+% \newif\ifshowpinArrowFirst\showpinArrowFirstfalse
+% \def\pinlen{1.8ex}
+% \def\pinAxpos{0}\def\pinBxpos{0}\def\pinCxpos{0}
+% \def\pinDxpos{0}\def\pinExpos{0}\def\pinFxpos{0}
+% \ifcase\dataD
+% \or\or
+% 	\def\pinAxpos{2.60}
+% \or
+% 	\def\pinAxpos{1.50}\def\pinBxpos{12.50}
+% 	\def\pinDxpos{2.10}\def\pinFxpos{7.50}
+% \or
+% 	\def\pinAxpos{1.50}\def\pinBxpos{12.50}\def\pinCxpos{2.40}
+% 	\def\pinDxpos{1.40}\def\pinExpos{1.30}\def\pinFxpos{5.90}
+% \fi
+% \input{figures/PrefPastsHyperb}
+%% --- scatter plot unit hyperboloid of pref. pasts:
+% \def\markersize{0.7pt}
+% \def\markeropacity{0.5}
+% \def\datadir{data/UnitHyperboloid}
+% \def\dataCri{6}
+% \def\dataxlabel{$x / \tau$}
+% \def\dataylabel{$y / \tau$}
+% \def\datazlabel{$z / \tau$}
+% \ifcase\dataD
+% \or\or\or
+% 	\def\xaxislength{5.5}
+% 	\def\xaxismax{2.3}\def\xaxisticksstep{1.0}\def\xaxisticksprecision{0}
+% 	\input{figures/PrefPastsScatterD2}
+% \or
+% 	\def\xaxislength{3.6}
+% 	\def\xaxismax{1.35}\def\xaxisticksstep{0.6}\def\xaxisticksprecision{1}
+% 	\input{figures/PrefPastsScatterD3}
+% \fi
+
+%% ######
+%% ------ plot diamonds:
+% \drawdiamondlinklabelstrue
+% \drawEvaluestrue
+% \newif\ifdrawshapesgeodesiclegend
+% \def\dataN{6000}
+% \def\dataNcount{1}
+% \def\dataNa{6000}
+% \def\dataNb{4000}
+% \def\dataNc{2000}
+% \def\datalabel{probability / \%}
+% \def\dataxlabel{}
+% \def\dataformat{xcutoff}
+% \def\xbinwidth{1}
+% \def\xaxismin{1}\def\xticksshift{0.5}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+%% --- plot diamonds of pref. futures:
+% \def\dataDlabel{1 + 1}
+% \pgfmathsetmacro\dataD{int(\dataDlabel)}
+% \def\dataNaPadding{~\phantom{.0}}
+% \def\dataNbPadding{~\phantom{.0}}
+% \def\dataNcPadding{~\phantom{.0}}
+% \def\datadir{data/Diamonds}
+% \def\criterion{6}
+% \def\dataparam{$\langle n \rangle = \dataN$\\criterion \criterion}
+% \def\dataname{biconeCri\criterion Min1} % min. $\lozenge^\cdot$
+% \def\legendlabel{fraction / \%}
+% \def\xaxismax{17.95}\def\xaxisticksstep{1}
+% \def\yaxismax{35.0}\def\yaxisticksstep{5.00}\def\yaxisticksprecision{0}
+% \input{figures/DiamondsBarChart}
+%% --- plot diamonds along timelike geodesics:
+% \drawshapesgeodesiclegendtrue
+% \drawbarlabeltrue\def\barlabelscale{0.65}
+% \def\barlabelbotmin{-1}\def\barlabelbotmax{70}
+% \def\barlabeltopmin{70}\def\barlabeltopmax{100}
+% \def\dataname{biconeArr2Vol1Srlsum}
+% \def\xaxismin{1}\def\xaxismax{5.99}\def\xaxisticksstep{1}
+% \def\yaxismax{90}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
+% \def\datadir{data/Diamonds}
+% \input{figures/DiamondsChainsBarChart}
+%% --- plot diamonds for total rank 2 past:
+% \drawshapesgeodesiclegendfalse
+% \def\datalabel{expected cardinality}
+% \drawbarlabelfalse\def\barlabelscale{0.65}
+% \def\barlabelbotmin{-1}\def\barlabelbotmax{70}
+% \def\barlabeltopmin{70}\def\barlabeltopmax{100}
+% \def\dataname{biconeArr1Vol3}
+% \def\xaxismin{1}\def\xaxismax{20.98}\def\xaxisticksstep{2}
+% \def\yaxismax{16}\def\yaxisticksstep{2}\def\yaxisticksprecision{0}
+% \def\datadir{data/Diamonds}
+% \input{figures/DiamondsChainsBarChart}
+
+%% ######
+%% ------ plot proper time distributions along timelike geodesics:
+% \drawEvaluestrue
+% \def\dataN{6000}
+% \def\datalabel{probability density}
+% \def\dataxlabel{proper time / $\sqrt[d]{1 / \rho}$}
+% \def\dataformat{xcutoff}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+% \def\datadir{data/ProperTimes}
+% \drawdiamondlinklabelsfalse
+% \def\xbinwidth{0.05}
+% \def\xaxismin{1}\def\xticksshift{0}
+% \def\dataname{biconeArr2Vol1}
+% \def\xaxismin{0}\def\xaxismax{2.95}\def\xaxisticksstep{0.2}\def\xaxisticksprecision{1}
+% \def\yaxismax{5}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
+% \def\pinlen{1ex}
+% \def\pinAxpos{0.6}\def\pinBxpos{0.98}\def\pinCxpos{1.6}
+% \input{figures/DiamondsChains}
+
+%% ######
+%% ------ plot diamond time curves:
+%% NIntegrate with Mathematica 12.1 and the options: 
+% \def\dataSource{} % PrecisionGoal -> 5
+% \def\dataSource{QMC} % PrecisionGoal -> 10, WorkingPrecision -> 20, Method -> "QuasiMonteCarlo"
+% \drawdiamondlinklabelstrue
+% \def\datadir{data/DiamondTimes}
+% \def\dataN{6000}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+% \def\dataname{biconeVol1}
+% \def\datalabel{expected proper time / $\sqrt[d]{1 / \rho}$}
+% \def\dataformat{xcutoffypos}
+% \drawdiamondlinklabelstrue
+% \def\yaxismin{1.5}\def\yaxismax{5.5}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
+% \def\xaxismax{28.0}\def\xaxisticksstep{2}
+% \def\theoryparamA{2}\def\theoryparamB{3.8197}\def\theoryparamC{7.6394}
+% \def\shapescaling{0.12}
+% \pgfmathsetmacro\shapeposA{( \yaxismax^2 - 1 ) / \theoryparamA / \xaxismax}
+% \pgfmathsetmacro\shapeposB{( ( \theoryparamB * \xaxismax + 1 )^(1/3) - \yaxismin ) / ( \yaxismax - \yaxismin )}
+% \pgfmathsetmacro\shapeposC{( ( \theoryparamC * \xaxismax + 1 )^(1/4) - \yaxismin ) / ( \yaxismax - \yaxismin )}
+% \input{figures/DiamondTimes}
+
+%% ##################################################################
+%% Further unused plots:
+%% ------------------------------------------------------------------
+
+%% ######
+%% ------ plots for pref. pasts:
+% \def\dataN{6000}
+% \def\dataDlabel{1 + 1}
+% \pgfmathsetmacro\dataD{int(\dataDlabel)}
+% \ifnum\dataD<4
+% \drawlegendfalse
+% \else
+% \drawlegendtrue
+% \fi
+% \def\datavol{3}
+% \pgfmathsetmacro\dataObsRegion{int(\datavol - 1)}
+% \def\datashape{bicone}
+% \def\dataylabel{probability / \%}
+% \def\dataformat{xcutoff}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+%% --- plot unit hyperboloid speed distribution of pref. pasts:
+% \def\dataparam{obs.\ region $U_{\dataObsRegion}$}
+% \def\datadir{data/UnitHyperboloidSpeed}
+% \def\xaxismax{1.0}\def\xaxisticksstep{0.1}\def\xaxisticksprecision{1}
+% \def\yaxismax{10.0}\def\yaxisticksstep{1.0}\def\yaxisticksprecision{0}
+% \def\dataxlabel{relative speed / $c$}
+% \newif\ifshowpinArrowFirst
+% \def\pinlen{1.8ex}
+% \def\pinAxpos{0}\def\pinBxpos{0}\def\pinCxpos{0}
+% \def\pinDxpos{0}\def\pinExpos{0}\def\pinFxpos{0}
+% \ifcase\dataD
+% \or\or
+% 	\def\pinAxpos{0.18}
+% \or
+% 	\def\pinAxpos{0.18}\def\pinBxpos{0.95}
+% \or
+% 	\def\pinAxpos{0.2}\def\pinBxpos{0.9}
+% \fi
+% \input{figures/PrefPastsHyperb}
+%% --- plot number of pref. pasts (combined):
+% \def\xaxislength{8}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+% \drawbarlabeltrue\def\barlabelscale{0.65}
+% \def\barlabelbotmin{-1}\def\barlabelbotmax{80}
+% \def\barlabeltopmin{80}\def\barlabeltopmax{100}
+% \def\xbinwidth{1}
+% \def\xaxismin{2}\def\xticksshift{0.5}
+% \def\datadir{data/PrefPasts}
+% \def\dataxlabel{spacetime dimension}
+% \def\xaxismax{4.99}\def\xaxisticksstep{1}\def\xaxisticksprecision{0}
+% \def\yaxismax{100}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
+% \foreach \animatedD in {2,3,4}{%
+% 	\foreach \animationscaling in {0,0.05,0.1,...,1.01}{%
+% 		\input{figures/PrefPastsBarChartCombined}
+% 	}
+% }
+
+%% ######
+%% ------ plot dimensions:
+% \def\dataN{600}
+% \def\datalabel{probability / \%}
+% \def\dataformat{xcutoff}
+%% --- plot dimension along chains:
+% \def\dataarr{2}
+% \def\datavol{1}
+% \def\datashape{bicone}
+% \def\xaxismax{5}\def\xaxisticksstep{0.5}\def\xaxisticksprecision{1}
+% \def\yaxismax{80}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
+% \def\datadir{data/Dimensions}
+% \input{figures/DimensionsChains}
+%% --- plot dimension of entire causet:
+% \def\dataparam{$n = \dataN$}
+% \def\dataname{biconeArr1Vol1}
+% \def\xaxismin{-0.1}\def\xticksshift{0}\def\xbinwidth{0.04}
+% \def\xaxismax{2.4}\def\xaxisticksstep{0.2}\def\xaxisticksprecision{1}
+% \def\yaxismax{36}\def\yaxisticksstep{3}\def\yaxisticksprecision{0}
+% \def\datadir{data/Dimensions}
+% \input{figures/DimensionsBarChart}
+%% --- plot dimension of pref. futures:
+% \def\dataparam{max. $\lozenge$}\def\dataname{biconeCri1Min1Vol3}\def\yaxismax{50}\def\yaxisticksstep{5}
+% \def\dataparam{min. $\lozenge^\dagger$}\def\dataname{biconeCri2Min1Vol3}\def\yaxismax{45}\def\yaxisticksstep{5}
+% \def\dataparam{min. $\lozenge^\ddagger$}\def\dataname{biconeCri3Min1Vol3}\def\yaxismax{100}\def\yaxisticksstep{10}
+% \def\dataparam{max. $\lozenge^\dagger$}\def\dataname{biconeCri4Min1Vol3}\def\yaxismax{40}\def\yaxisticksstep{5}
+% \def\dataparam{min. $\lozenge^\cdot$}\def\dataname{biconeCri5Min1Vol3}\def\yaxismax{50}\def\yaxisticksstep{5}
+% \def\dataparam{max. $\lozenge^\ddagger$}\def\dataname{biconeCri6Min1Vol3}\def\yaxismax{80}\def\yaxisticksstep{10}
+% \def\xaxismax{5}\def\xaxisticksstep{0.5}\def\xaxisticksprecision{1}
+% \def\yaxisticksprecision{0}
+% \def\datadir{data/Dimensions}
+% \input{figures/Dimensions}
+
+%% ######
+%% ------ plot simplexes:
+% \def\dataD{2}\def\dataN{200}
+% \def\dataD{3}\def\dataN{500}
+% \def\dataD{4}\def\dataN{2000}
+% \def\subdataN{100}
+% \def\datashape{bicone}
+% \def\datalabel{probability / \%}
+% \def\datadir{data/Dimensions}
+% \drawbarlabelfalse\def\barlabelscale{0.5}
+% \def\barlabelbotmin{0}\def\barlabelbotmax{1}
+% \def\barlabeltopmin{80}\def\barlabeltopmax{100}
+% % --- plot simplexes of entire causet:
+% \def\dataparam{$\langle n \rangle = \subdataN$}
+% \def\xaxismin{-0.5}\def\xaxismax{100}
+% \def\xaxissplitfrom{1.5}\def\xaxissplitto{98.0}\def\xaxisticksstep{0.5}
+% \def\xticksshift{0}\def\xbinwidth{0.5}
+% \def\xaxisticksprecision{1}\def\yaxisticksprecision{0}
+% \def\yaxismax{100}\def\yaxisticksstep{10}
+% \def\dataname{biconeVol1}
+% \input{figures/SimplicesSplit}
+
+\end{document}

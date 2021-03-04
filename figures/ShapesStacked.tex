@@ -1,0 +1,18 @@
+\node[below left] (shapeD2geodesic) at (\xaxislength, \yaxislength) {
+	\begin{tikzpicture}[scale=0.2]
+		\pgfsetcornersarced{\pgfpointorigin}
+		\input{figures/ShapeD2bicone}
+	\end{tikzpicture}
+};
+\node[below] (shapeD3geodesic) at (shapeD2geodesic.south) {
+	\begin{tikzpicture}[scale=0.2]
+		\pgfsetcornersarced{\pgfpointorigin}
+		\input{figures/ShapeD3bicone}
+	\end{tikzpicture}
+};
+\node[below] (shapeD4geodesic) at (shapeD3geodesic.south) {
+	\begin{tikzpicture}[scale=0.2]
+		\pgfsetcornersarced{\pgfpointorigin}
+		\input{figures/ShapeD4bicone}
+	\end{tikzpicture}
+};

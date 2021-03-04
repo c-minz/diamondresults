@@ -1,0 +1,11 @@
+\input{figures/ShapeD4bicone}
+\clip (-0.45*\shapesize, 0.00*\shapesize ) 
+	-- ( 0.00*\shapesize,-0.45*\shapesize ) 
+	-- ( 0.45*\shapesize, 0.00*\shapesize ) 
+	-- ( 0.00*\shapesize, 0.45*\shapesize ) 
+	-- cycle;
+\draw[YorkGreen, line width=1pt, decorate, decoration={random steps, segment length=1.5pt, amplitude=0.5pt}] 
+	   ( 0,-0.45*\shapesize ) 
+	.. controls ( 0.2*\shapesize,-0.1*\shapesize ) 
+	   and (-0.1*\shapesize, 0.2*\shapesize ) 
+	.. ( 0, 0.45*\shapesize );

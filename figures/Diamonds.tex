@@ -1,0 +1,108 @@
+\ifdrawdiamondlinklabels
+	\def\xaxisticksshift{-2mm}
+\else
+	\def\xaxisticksshift{0mm}
+\fi
+%### ignore input error
+\input{data/PrefFutures/D\dataD biconeLabels}
+%###
+\begin{tikzpicture}
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, label={\ifdrawdiamondlinklabels\else number of center elements\fi}, ticks={step=\xaxisticksstep, node style={yshift=\xaxisticksshift}}},
+		y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+		all axes={grid},
+		visualize as line/.list={1, ..., 6},
+		legend={right},
+		legend entry options/default label in legend mark/.style=label in legend three marks,
+		new legend entry={text={\dataparam}, node style={xshift=-2em}},
+		new legend entry={text={}},
+		new legend entry={text={$N$:~~%
+			\dataNaPadding\textcolor{black!100.0}{\dataNa}%
+			\dataNbPadding\textcolor{black!066.7}{\dataNb}%
+			\dataNcPadding\textcolor{black!033.3}{\dataNc}}, node style={xshift=-2em}},
+		new legend entry={text={Fraction / \%:}, node style={xshift=-2em}},
+		1={style={  YorkPurple}, label in legend={text={\legendlabelA}}},
+		2={style={     YorkRed}, label in legend={text={\legendlabelB}}},
+		3={style={  YorkYellow}, label in legend={text={\legendlabelC}}},
+		4={style={   YorkGreen}, label in legend={text={\legendlabelD}}},
+		5={style={    YorkBlue}, label in legend={text={\legendlabelE}}},
+		6={style={YorkDarkBlue}, label in legend={text={\legendlabelF}}}
+		];
+	\ifdrawdiamondlinklabels
+		\begin{scope}[yshift=\xaxisticksshift]
+			\input{figures/DiamondLabels}
+		\end{scope}
+	\fi
+	\node[below left] (subvolumesfig) at (\xaxislength, \yaxislength) {
+		\begin{tikzpicture}[scale=0.2]
+			\pgfsetcornersarced{\pgfpointorigin}
+			\input{figures/ShapeD2biconeSubvolumes}
+		\end{tikzpicture}
+	};
+	\node[fill=white, fill opacity=0.5, text opacity=1, scale=0.5] at (subvolumesfig) {$\dataDlabel$};
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\ifnum\dataNcount>2
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			1={style={  YorkPurple!033.3}},
+			2={style={     YorkRed!033.3}},
+			3={style={  YorkYellow!033.3}},
+			4={style={   YorkGreen!033.3}},
+			5={style={    YorkBlue!033.3}},
+			6={style={YorkDarkBlue!033.3}}
+			]
+			data [set=1, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol1Srlsum.csv}]
+			data [set=2, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol2Srlsum.csv}]
+			data [set=3, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol3Srlsum.csv}]
+			data [set=4, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol4Srlsum.csv}]
+			data [set=5, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol5Srlsum.csv}]
+			data [set=6, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNc D\dataD\dataname Vol6Srlsum.csv}];
+	\fi
+	\ifnum\dataNcount>1
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			1={style={  YorkPurple!066.7}},
+			2={style={     YorkRed!066.7}},
+			3={style={  YorkYellow!066.7}},
+			4={style={   YorkGreen!066.7}},
+			5={style={    YorkBlue!066.7}},
+			6={style={YorkDarkBlue!066.7}}
+			]
+			data [set=1, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol1Srlsum.csv}]
+			data [set=2, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol2Srlsum.csv}]
+			data [set=3, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol3Srlsum.csv}]
+			data [set=4, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol4Srlsum.csv}]
+			data [set=5, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol5Srlsum.csv}]
+			data [set=6, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNb D\dataD\dataname Vol6Srlsum.csv}];
+	\fi
+	\ifnum\dataNcount>0
+		\datavisualization[
+			scientific axes=clean,
+			x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
+			y axis={length=\yaxislength cm, min value=0, max value=\yaxismax, ticks={none}},
+			all axes={grid=none},
+			visualize as line/.list={1, ..., 6},
+			1={style={  YorkPurple!100.0}},
+			2={style={     YorkRed!100.0}},
+			3={style={  YorkYellow!100.0}},
+			4={style={   YorkGreen!100.0}},
+			5={style={    YorkBlue!100.0}},
+			6={style={YorkDarkBlue!100.0}}
+			]
+			data [set=1, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol1Srlsum.csv}]
+			data [set=2, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol2Srlsum.csv}]
+			data [set=3, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol3Srlsum.csv}]
+			data [set=4, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol4Srlsum.csv}]
+			data [set=5, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol5Srlsum.csv}]
+			data [set=6, headline={x, y}, format=\dataformat, read from file={\datadir/N\dataNa D\dataD\dataname Vol6Srlsum.csv}];
+	\fi
+\end{tikzpicture}
