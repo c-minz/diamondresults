@@ -19,6 +19,8 @@ function jobs_processfile_diamondtimes( paramstr, ...
 %                       ...
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/DiamondTimes
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 2 || isempty( attributions )

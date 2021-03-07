@@ -18,6 +18,8 @@ function jobs_processfile_simplices( paramstr, ...
 %                       ...
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/Dimensions
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 2 || isempty( attributions )

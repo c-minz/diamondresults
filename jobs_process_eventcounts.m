@@ -20,6 +20,8 @@ function jobs_process_eventcounts( Ns, dims, ...
 % TARGETDIR           directory for processed file output. 
 %                     Default: 
 %                     data/Diamonds
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 3

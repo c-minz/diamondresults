@@ -3,6 +3,8 @@ function latex = matrix2latex( A )
 % 
 % Arguments:
 % A is the matrix to be converted.
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
     
     % fractionformat = "{}^{%d}/_{%d}";
     fractionformat = "\\frac{%d}{%d}";

@@ -1,3 +1,5 @@
+% Copyright 2021, C. Minz. BSD 3-Clause License.
+
 \ifdrawdiamondlinklabels
 	\def\xaxisticksshift{-2mm}
 \else
@@ -22,7 +24,7 @@
 		];
 	\ifdrawdiamondlinklabels
 		\begin{scope}[yshift=\xaxisticksshift]
-			\input{figures/LinkCounts/DiamondLinkLabels}
+			\input{figures/DiamondLabels}
 		\end{scope}
 	\fi
 	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
@@ -55,17 +57,17 @@
 		data [set=D4, read from file={\datadir/N\dataN D4\dataname.csv}];
 	\node[below] at (\shapeposA*\xaxislength, \yaxislength) {%
 		\begin{tikzpicture}[shapeinset/.style={draw=D2Color, thin}, scale=\shapescaling]
-			\input{figures/D2/ShapeD2bicone}
+			\input{figures/ShapeD2bicone}
 		\end{tikzpicture}
 	};
 	\node[above left] at (\xaxislength, \shapeposB*\yaxislength) {%
 		\begin{tikzpicture}[shapeinset/.style={draw=D3Color, thin}, scale=\shapescaling]
-			\input{figures/D3/ShapeD3bicone}
+			\input{figures/ShapeD3bicone}
 		\end{tikzpicture}
 	};
 	\node[below left] at (\xaxislength, \shapeposC*\yaxislength) {%
 		\begin{tikzpicture}[shapeinset/.style={draw=D4Color, thin}, scale=\shapescaling]
-			\input{figures/D4/ShapeD4bicone}
+			\input{figures/ShapeD4bicone}
 		\end{tikzpicture}
 	};
 \end{tikzpicture}

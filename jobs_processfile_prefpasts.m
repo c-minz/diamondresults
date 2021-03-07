@@ -26,6 +26,8 @@ function jobs_processfile_prefpasts( paramstr, maxcount, ...
 %                       ...
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/PrefPasts
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 2 || isempty( maxcount )

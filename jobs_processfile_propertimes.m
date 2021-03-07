@@ -35,6 +35,8 @@ function jobs_processfile_propertimes( paramstr, ...
 %                       3: geodesic from event 1 to N by maximal volume
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/ProperTimes
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
 % RESCALE             positive factor to rescale the interval sizes.

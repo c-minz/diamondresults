@@ -7,6 +7,8 @@ function filename = jobs_getparamstr( N, d, shape )
 % 
 % Optional arguments:
 % SHAPE               name of the shape, default: 'Bicone'.
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     if nargin < 3 || isempty( shape )
         shape = 'Bicone';

@@ -18,6 +18,8 @@ function saveas_csv( filename, Y, X, yaxisscale )
 %                     written with the extension '.csv'. With 'log' the
 %                     logarithm of the Y data is stored and the file
 %                     extension is '.log.csv'.
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
     
     if nargin < 4
         yaxisscale = 'linear';

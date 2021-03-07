@@ -6,6 +6,8 @@ function jobs_preprocessfile( filename )
 % 
 % Arguments:
 % FILENAME            name of the file (without extension) to be processed.
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% load data:
     masterdata = load( sprintf( '%s.mat', filename ) );

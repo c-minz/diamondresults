@@ -9,6 +9,8 @@ function jobs_preprocess( Ns, dims, shapes )
 % 
 % Optional arguments:
 % SHAPES              string array of shape names. 
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 3 || isempty( shapes )

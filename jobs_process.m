@@ -10,6 +10,8 @@ function jobs_process( Ns, dims, ...
 % Optional arguments:
 % SHAPES              cell array of shape names. 
 %                     Default: { 'Bicone' }
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 3 || isempty( shapes )

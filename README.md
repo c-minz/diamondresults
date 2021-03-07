@@ -21,9 +21,11 @@ The research results are generated with the following steps:
 3. Raw data files are converted to data tables (two column csv files) with the functions given in _this repository_.
 4. Data files are plotted in histograms and diagrams with TikZ using the "diamondgraphs.tex" file from _this repository_.
 
-Distribution Information
-========================
-
-Copyright 2021 by Christoph Minz.
+Distributional Information
+==========================
 
 Development environments: MATLAB R2019a, MATLAB R2020a
+
+BSD 3-Clause License, see [license file](LICENSE.md).
+
+Copyright (c) 2021, Christoph Minz.

@@ -37,6 +37,8 @@ function jobs_processfile_unithyperboloid( paramstr, ...
 % PARAMSTREXT         extra name parameters for the file to be processed.
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/UnitHyperboloid
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 2 || isempty( attributions )

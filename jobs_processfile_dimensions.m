@@ -35,6 +35,8 @@ function jobs_processfile_dimensions( paramstr, ...
 %                       3 links along further chains to the top
 % TARGETDIR           directory for processed csv file output. 
 %                     Default: data/Dimensions
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
 % RESCALE             positive factor to rescale the interval sizes.

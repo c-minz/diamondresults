@@ -39,6 +39,8 @@ function jobs_processfile_diamonds( paramstr, ...
 %                       3 links along further chains to the top
 % TARGETDIR           directory for processed file output. 
 %                     Default: data/Diamonds
+% 
+% Copyright 2021, C. Minz. BSD 3-Clause License.
 
     %% set default values:
     if nargin < 2 || isempty( subrelations )
