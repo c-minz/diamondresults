@@ -1,20 +1,27 @@
 % Copyright 2021, C. Minz. BSD 3-Clause License.
 
+\def\shapescaling{0.14}
 \node[below left] (shapeD2geodesic) at (\xaxislength, \yaxislength) {
-	\begin{tikzpicture}[scale=0.2]
+	\begin{tikzpicture}[scale=\shapescaling]
 		\pgfsetcornersarced{\pgfpointorigin}
 		\input{figures/ShapeD2biconeGeodesic}
 	\end{tikzpicture}
 };
 \node[below] (shapeD3geodesic) at (shapeD2geodesic.south) {
-	\begin{tikzpicture}[scale=0.2]
+	\begin{tikzpicture}[scale=\shapescaling]
 		\pgfsetcornersarced{\pgfpointorigin}
 		\input{figures/ShapeD3biconeGeodesic}
 	\end{tikzpicture}
 };
 \node[below] (shapeD4geodesic) at (shapeD3geodesic.south) {
-	\begin{tikzpicture}[scale=0.2]
+	\begin{tikzpicture}[scale=\shapescaling]
 		\pgfsetcornersarced{\pgfpointorigin}
 		\input{figures/ShapeD4biconeGeodesic}
+	\end{tikzpicture}
+};
+\node[below] (shapeD5geodesic) at (shapeD4geodesic.south) {
+	\begin{tikzpicture}[scale=\shapescaling]
+		\pgfsetcornersarced{\pgfpointorigin}
+		\input{figures/ShapeD5biconeGeodesic}
 	\end{tikzpicture}
 };

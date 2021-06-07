@@ -1,0 +1,33 @@
+% Copyright 2021, C. Minz. BSD 3-Clause License.
+
+\begin{scope}[shapeinset]
+	\draw ( 0, -0.47*\shapesize) coordinate (Past) 
+		-- ( 0.50*\shapesize,  0 ) coordinate (Right) 
+		-- ( 0,  0.47*\shapesize ) coordinate (Future) 
+		-- (-0.50*\shapesize,  0 ) coordinate (Left) 
+		-- cycle;
+	\draw (Future) 
+		-- (-0.28*\shapesize, -0.06*\shapesize ) coordinate (Front) 
+		-- (Past) 
+		-- ( 0.28*\shapesize,  0.06*\shapesize ) coordinate (Back) 
+		-- cycle;
+	\draw ( 0,  0 ) circle[x radius=0.497*\shapesize, 
+												 y radius=0.070*\shapesize];
+	\draw ( 0,  0 ) circle[x radius=0.280*\shapesize, 
+		                     y radius=0.190*\shapesize, 
+		                     rotate=10];
+	\draw ( 0,  0 ) circle[x radius=0.170*\shapesize, 
+												 y radius=0.170*\shapesize];
+	\draw ( 0,  0 ) circle[x radius=0.070*\shapesize, 
+												 y radius=0.070*\shapesize];
+	\draw[very thin] ( 0,  0 ) circle[x radius=0.497*\shapesize, 
+		                                y radius=0.190*\shapesize];
+	\draw (Past) 
+		-- ( 0.03*\shapesize , -0.19*\shapesize );
+	\draw[very thin] (Past) 
+		-- (-0.03*\shapesize ,  0.19*\shapesize );
+	\draw (Future) 
+		-- (-0.03*\shapesize ,  0.19*\shapesize );
+	\draw[very thin] (Future) 
+		-- ( 0.03*\shapesize , -0.19*\shapesize );
+\end{scope}

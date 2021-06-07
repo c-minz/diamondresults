@@ -1,0 +1,48 @@
+% Copyright 2021, C. Minz. BSD 3-Clause License.
+
+\ifdrawdiamondlinklabels
+	\def\xaxisticksshift{-2mm}
+\else
+	\def\xaxisticksshift{0mm}
+\fi
+\begin{tikzpicture}
+	\pgfmathsetmacro\xaxisrange{\xaxismax - \xaxismin}
+	\pgfmathsetmacro\yaxisrange{\yaxismax - \yaxismin}
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, label={\ifdrawdiamondlinklabels\else number of center elements\fi}, ticks={step=\xaxisticksstep, node style={yshift=\xaxisticksshift}}},
+		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
+		all axes={grid},
+		visualize as smooth line
+		];
+	\ifdrawdiamondlinklabels
+		\begin{scope}[yshift=\xaxisticksshift]
+			\input{figures/DiamondLabels}
+		\end{scope}
+	\fi
+	\clip (0cm, 0cm) rectangle (\xaxislength, \yaxislength);
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=\xaxismin, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as smooth line,
+		data/format=\dataformat
+		]
+		data [read from file={\datadir/\dataname.csv}];
+% 	\node[below] at (\shapeposA*\xaxislength, \yaxislength) {%
+% 		\begin{tikzpicture}[shapeinset/.style={draw=D2Color, thin}, scale=\shapescaling]
+% 			\input{figures/ShapeD2bicone}
+% 		\end{tikzpicture}
+% 	};
+% 	\node[above left] at (\xaxislength, \shapeposB*\yaxislength) {%
+% 		\begin{tikzpicture}[shapeinset/.style={draw=D3Color, thin}, scale=\shapescaling]
+% 			\input{figures/ShapeD3bicone}
+% 		\end{tikzpicture}
+% 	};
+% 	\node[below left] at (\xaxislength, \shapeposC*\yaxislength) {%
+% 		\begin{tikzpicture}[shapeinset/.style={draw=D4Color, thin}, scale=\shapescaling]
+% 			\input{figures/ShapeD4bicone}
+% 		\end{tikzpicture}
+% 	};
+\end{tikzpicture}

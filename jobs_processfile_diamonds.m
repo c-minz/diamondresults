@@ -75,6 +75,7 @@ function jobs_processfile_diamonds( paramstr, ...
                     clear temp;
                 end
                 Y = results.diamonds( :, :, vol, arr );
+                fprintf( 'Total number of diamonds: %d\n', sum( sum( Y ) ) );
                 thisparamstr = sprintf( '%sArr%dVol%d', ...
                     paramstr, arr, vol );
             else

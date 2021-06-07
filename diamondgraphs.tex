@@ -21,7 +21,8 @@
 \pgfplotsset{compat=1.15}
 \usetikzlibrary{%
 	datavisualization,
-	datavisualization.formats.functions
+	datavisualization.formats.functions,
+	plotmarks
 }
 \usepackage{colorYork}
 
@@ -54,11 +55,45 @@
 \colorlet{D2Color}{YorkDarkBlue}
 \colorlet{D3Color}{YorkDarkBlue!20!YorkBlue}
 \colorlet{D4Color}{YorkGreen}
+\colorlet{D5Color}{YorkYellow}
+\colorlet{D6Color}{YorkOrange}
+\colorlet{D7Color}{YorkRed}
+\colorlet{D8Color}{YorkPink}
 \pgfdvdeclarestylesheet{dimensions}{
 	1/.style={D2Color},
 	2/.style={D3Color},
 	3/.style={D4Color},
+	4/.style={D5Color},
+	5/.style={D6Color},
+	6/.style={D7Color},
+	7/.style={D8Color},
 	default style/.style={YorkBlack}
+}
+\pgfkeyssetvalue{/bar colors/1}{D2Color}
+\pgfkeyssetvalue{/bar colors/2}{D3Color}
+\pgfkeyssetvalue{/bar colors/3}{D4Color}
+\pgfkeyssetvalue{/bar colors/4}{D5Color}
+\pgfkeyssetvalue{/bar colors/5}{D6Color}
+\pgfkeyssetvalue{/bar colors/6}{D7Color}
+\newcommand*{\setDataNLinearlyIncreasing}{%
+	\ifcsname dataNa\endcsname\else
+		\pgfmathsetmacro\dataNa{int( \dataN + 0 * \dataNDelta )}
+	\fi
+	\ifcsname dataNb\endcsname\else
+		\pgfmathsetmacro\dataNb{int( \dataN + 1 * \dataNDelta )}
+	\fi
+	\ifcsname dataNc\endcsname\else
+		\pgfmathsetmacro\dataNc{int( \dataN + 2 * \dataNDelta )}
+	\fi
+	\ifcsname dataNd\endcsname\else
+		\pgfmathsetmacro\dataNd{int( \dataN + 3 * \dataNDelta )}
+	\fi
+	\ifcsname dataNe\endcsname\else
+		\pgfmathsetmacro\dataNe{int( \dataN + 4 * \dataNDelta )}
+	\fi
+	\ifcsname dataNf\endcsname\else
+		\pgfmathsetmacro\dataNf{int( \dataN + 5 * \dataNDelta )}
+	\fi
 }
 
 %% ##################################################################
@@ -105,15 +140,23 @@
 \fi
 }{}{}
 %% data format to draw lines for expectation values:
-\pgfdeclaredataformat{drawEvalues}
-{}{}{#1, #2}{
-\ifdrawEvalues
+\pgfdeclaredataformat{distribution}
+{}{}{#1, #2, #3, #4}{
+\pgfmathsetmacro\dresult{int( #1 )}
+\ifnum\dresult<\dataDcut
 	\pgfkeyssetvalue{/data point/x}{#2}
-	\pgfkeyssetvalue{/data point/y}{0}
+	\pgfkeyssetvalue{/data point/y}{#1}
 	\pgfdatapoint
-	\pgfkeyssetvalue{/data point/x}{#2}
-	\pgfkeyssetvalue{/data point/y}{\yaxismax}
-	\pgfdatapoint
+	\pgfmathsetmacro\xresult{( #2 - 1 ) * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\yresult{( #1 - \yaxismin ) * \yaxislength / \yaxisrange}
+	\pgfmathsetmacro\vresult{#3 * \xaxislength / \xaxisrange}
+	\pgfmathsetmacro\sresult{#4 * \xaxislength / \xaxisrange}
+	\node[D\dresult Color, fill, circle, minimum size=3pt, inner sep=0pt] 
+		at ( \xresult, \yresult ) {};
+	\node[D\dresult Color, scale=0.5, inner sep=0pt] 
+		at ( \xresult + 0.25 * \sresult, \yresult ) {$|$};
+	\draw[D\dresult Color, ultra thick, opacity=0.3] 
+		( \xresult - 0.5 * \vresult + 0.25 * \sresult, \yresult ) -- +( \vresult, 0 );
 \fi
 }{}{}
 %% data format to draw bar chart:
@@ -257,20 +300,20 @@
 
 %% ######
 %% ------ plots for pref. pasts:
-\def\dataN{6000}
-\def\dataDlabel{1 + 1}
-\pgfmathsetmacro\dataD{int(\dataDlabel)}
-\ifnum\dataD<4
-\drawlegendfalse
-\else
-\drawlegendtrue
-\fi
-\def\datavol{3}
-\pgfmathsetmacro\dataObsRegion{int(\datavol - 1)}
-\def\datashape{bicone}
-\def\dataylabel{probability / \%}
-\def\dataformat{xcutoff}
-\def\dataparam{$\langle n \rangle = \dataN$}
+% \def\dataN{6000}
+% \def\dataDlabel{1 + 3}
+% \pgfmathsetmacro\dataD{int(\dataDlabel)}
+% \ifnum\dataD<4
+% \drawlegendfalse
+% \else
+% \drawlegendtrue
+% \fi
+% \def\datavol{3}
+% \pgfmathsetmacro\dataObsRegion{int(\datavol - 1)}
+% \def\datashape{bicone}
+% \def\dataylabel{probability / \%}
+% \def\dataformat{xcutoff}
+% \def\dataparam{$\langle n \rangle = \dataN$}
 %% --- plot number of pref. pasts:
 % \drawbarlabeltrue\def\barlabelscale{0.65}
 % \def\barlabelbotmin{-1}\def\barlabelbotmax{80}
@@ -285,26 +328,26 @@
 % \def\legendtextshift{-0.85em}
 % \input{figures/PrefPastsBarChart}
 %% --- plot proper times of pref. pasts:
-\drawEvaluesfalse
-\def\datadir{data/ProperTimes}
-\def\dataylabel{probability density}
-\def\xaxismax{6.5}\def\xaxisticksstep{0.50}\def\xaxisticksprecision{1}
-\def\yaxismax{6.5}\def\yaxisticksstep{0.50}\def\yaxisticksprecision{1}
-\def\dataxlabel{proper time / $\sqrt[\dataD]{1 / \rho}$}
-\newif\ifshowpinArrowFirst
-\def\pinlen{1.8ex}
-\ifcase\dataD
-\or\or
-\def\pinAxpos{5.95}\def\pinBxpos{1.2}\def\pinCxpos{2.3}
-\def\pinDxpos{4.7}\def\pinExpos{3.7}\def\pinFxpos{3.2}\showpinArrowFirsttrue
-\or
-\def\pinAxpos{5.95}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
-\def\pinDxpos{4.5}\def\pinExpos{3.6}\def\pinFxpos{3.25}\showpinArrowFirsttrue
-\or
-\def\pinAxpos{5.5}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
-\def\pinDxpos{5.5}\def\pinExpos{4.5}\def\pinFxpos{3.3}\showpinArrowFirstfalse
-\fi
-\input{figures/PrefPasts}
+% \drawEvaluesfalse
+% \def\datadir{data/ProperTimes}
+% \def\dataylabel{probability density}
+% \def\xaxismax{6.5}\def\xaxisticksstep{0.50}\def\xaxisticksprecision{1}
+% \def\yaxismax{6.5}\def\yaxisticksstep{0.50}\def\yaxisticksprecision{1}
+% \def\dataxlabel{proper time / $\sqrt[\dataD]{1 / \rho}$}
+% \newif\ifshowpinArrowFirst
+% \def\pinlen{1.8ex}
+% \ifcase\dataD
+% \or\or
+% \def\pinAxpos{5.95}\def\pinBxpos{1.2}\def\pinCxpos{2.3}
+% \def\pinDxpos{4.7}\def\pinExpos{3.7}\def\pinFxpos{3.2}\showpinArrowFirsttrue
+% \or
+% \def\pinAxpos{5.95}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
+% \def\pinDxpos{4.5}\def\pinExpos{3.6}\def\pinFxpos{3.25}\showpinArrowFirsttrue
+% \or
+% \def\pinAxpos{5.5}\def\pinBxpos{1.3}\def\pinCxpos{2.8}
+% \def\pinDxpos{5.5}\def\pinExpos{4.5}\def\pinFxpos{3.3}\showpinArrowFirstfalse
+% \fi
+% \input{figures/PrefPasts}
 %% --- plot unit hyperboloid distribution of pref. pasts:
 % \def\dataparam{obs.\ region $U_{\dataObsRegion}$}
 % \def\dataxlabel{$\rho_{\dataDlabel}$}
@@ -348,21 +391,21 @@
 
 %% ######
 %% ------ plot diamonds:
-% \drawdiamondlinklabelstrue
-% \drawEvaluestrue
-% \newif\ifdrawshapesgeodesiclegend
-% \def\dataN{6000}
+\drawdiamondlinklabelstrue
+\drawEvaluestrue
+\newif\ifdrawshapesgeodesiclegend
+\def\dataN{2000}
+\def\datalabel{probability / \%}
+\def\dataxlabel{}
+\def\dataformat{xcutoff}
+\def\xbinwidth{1}
+\def\xaxismin{1}\def\xticksshift{0.5}
+\def\dataparam{$\langle n \rangle = \dataN$}
+%% --- plot diamonds of pref. futures:
 % \def\dataNcount{1}
 % \def\dataNa{6000}
 % \def\dataNb{4000}
 % \def\dataNc{2000}
-% \def\datalabel{probability / \%}
-% \def\dataxlabel{}
-% \def\dataformat{xcutoff}
-% \def\xbinwidth{1}
-% \def\xaxismin{1}\def\xticksshift{0.5}
-% \def\dataparam{$\langle n \rangle = \dataN$}
-%% --- plot diamonds of pref. futures:
 % \def\dataDlabel{1 + 1}
 % \pgfmathsetmacro\dataD{int(\dataDlabel)}
 % \def\dataNaPadding{~\phantom{.0}}
@@ -377,15 +420,18 @@
 % \def\yaxismax{35.0}\def\yaxisticksstep{5.00}\def\yaxisticksprecision{0}
 % \input{figures/DiamondsBarChart}
 %% --- plot diamonds along timelike geodesics:
-% \drawshapesgeodesiclegendtrue
-% \drawbarlabeltrue\def\barlabelscale{0.65}
-% \def\barlabelbotmin{-1}\def\barlabelbotmax{70}
-% \def\barlabeltopmin{70}\def\barlabeltopmax{100}
-% \def\dataname{biconeArr2Vol1Srlsum}
-% \def\xaxismin{1}\def\xaxismax{5.99}\def\xaxisticksstep{1}
-% \def\yaxismax{90}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
-% \def\datadir{data/Diamonds}
-% \input{figures/DiamondsChainsBarChart}
+\drawshapesgeodesiclegendtrue
+\def\dataNDelta{3000}
+\def\dataNa{80}
+\def\dataNf{17000}
+\drawbarlabeltrue\def\barlabelscale{0.65}
+\def\barlabelbotmin{-1}\def\barlabelbotmax{70}
+\def\barlabeltopmin{70}\def\barlabeltopmax{100}
+\def\dataname{biconeArr3Vol1Srlsum}
+\def\xaxismin{1}\def\xaxismax{7.99}\def\xaxisticksstep{1}
+\def\yaxismax{90}\def\yaxisticksstep{10}\def\yaxisticksprecision{0}
+\def\datadir{data/Diamonds}
+\input{figures/DiamondsChainsBarChart}
 %% --- plot diamonds for total rank 2 past:
 % \drawshapesgeodesiclegendfalse
 % \def\datalabel{expected cardinality}
@@ -400,26 +446,29 @@
 
 %% ######
 %% ------ plot proper time distributions along timelike geodesics:
-% \drawEvaluestrue
-% \def\dataN{6000}
-% \def\datalabel{probability density}
-% \def\dataxlabel{proper time / $\sqrt[d]{1 / \rho}$}
-% \def\dataformat{xcutoff}
-% \def\dataparam{$\langle n \rangle = \dataN$}
-% \def\datadir{data/ProperTimes}
-% \drawdiamondlinklabelsfalse
-% \def\xbinwidth{0.05}
-% \def\xaxismin{1}\def\xticksshift{0}
-% \def\dataname{biconeArr2Vol1}
-% \def\xaxismin{0}\def\xaxismax{2.95}\def\xaxisticksstep{0.2}\def\xaxisticksprecision{1}
-% \def\yaxismax{5}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
-% \def\pinlen{1ex}
-% \def\pinAxpos{0.6}\def\pinBxpos{0.98}\def\pinCxpos{1.6}
-% \input{figures/DiamondsChains}
+\drawEvaluestrue
+\def\dataN{2000}
+\def\dataNDelta{3000}
+\def\dataNa{80}
+\def\datalabel{probability density}
+\def\dataxlabel{proper time / $\sqrt[d]{1 / \rho}$}
+\def\dataformat{xcutoff}
+\def\dataparam{$\langle n \rangle = \dataN$}
+\def\datadir{data/ProperTimes}
+\drawdiamondlinklabelsfalse
+\def\xbinwidth{0.05}
+\def\xaxismin{1}\def\xticksshift{0}
+\def\dataname{biconeArr3Vol1}
+\def\xaxismin{0}\def\xaxismax{3.75}\def\xaxisticksstep{0.3}\def\xaxisticksprecision{1}
+\def\yaxismax{4.5}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
+\def\pinlen{1.0ex}
+\def\pinAxpos{0.5}\def\pinBxpos{0.0}\def\pinCxpos{0.0}
+\def\pinDxpos{0.0}\def\pinExpos{0.0}\def\pinFxpos{0.0}
+\input{figures/DiamondsChains}
 
 %% ######
 %% ------ plot diamond time curves:
-%% NIntegrate with Mathematica 12.1 and the options: 
+%% NIntegrate with Mathematica 12.1 and the options:
 % \def\dataSource{} % PrecisionGoal -> 5
 % \def\dataSource{QMC} % PrecisionGoal -> 10, WorkingPrecision -> 20, Method -> "QuasiMonteCarlo"
 % \drawdiamondlinklabelstrue
@@ -432,12 +481,29 @@
 % \drawdiamondlinklabelstrue
 % \def\yaxismin{1.5}\def\yaxismax{5.5}\def\yaxisticksstep{0.5}\def\yaxisticksprecision{1}
 % \def\xaxismax{28.0}\def\xaxisticksstep{2}
-% \def\theoryparamA{2}\def\theoryparamB{3.8197}\def\theoryparamC{7.6394}
+% \def\alphaA{2}\def\alphaB{3.8197}\def\alphaC{7.6394}
 % \def\shapescaling{0.12}
-% \pgfmathsetmacro\shapeposA{( \yaxismax^2 - 1 ) / \theoryparamA / \xaxismax}
-% \pgfmathsetmacro\shapeposB{( ( \theoryparamB * \xaxismax + 1 )^(1/3) - \yaxismin ) / ( \yaxismax - \yaxismin )}
-% \pgfmathsetmacro\shapeposC{( ( \theoryparamC * \xaxismax + 1 )^(1/4) - \yaxismin ) / ( \yaxismax - \yaxismin )}
+% \pgfmathsetmacro\shapeposA{( \yaxismax^2 - 1 ) / \alphaA / \xaxismax}
+% \pgfmathsetmacro\shapeposB{( ( \alphaB * \xaxismax + 1 )^(1/3) - \yaxismin ) / ( \yaxismax - \yaxismin )}
+% \pgfmathsetmacro\shapeposC{( ( \alphaC * \xaxismax + 1 )^(1/4) - \yaxismin ) / ( \yaxismax - \yaxismin )}
 % \input{figures/DiamondTimes}
+
+%% ######
+%% ------ plot diamond size curves:
+% \drawdiamondlinklabelstrue
+% \def\datadir{data/Diamonds}
+% \def\dataN{6000}
+% \def\dataDcut{7}
+% \def\dataparam{$\langle n \rangle = \dataN$}
+% \def\dataname{DiamondMomentsCri6Min1Vol6L2}
+% \def\datalabel{dimension}
+% \def\dataformat{distribution}
+% \drawdiamondlinklabelstrue
+% \pgfmathsetmacro\yaxismax{\dataDcut - 0.5}
+% \def\yaxismin{1.5}\def\yaxisticksstep{1.0}\def\yaxisticksprecision{0}
+% \def\xaxismin{1.0}\def\xaxismax{35.0}\def\xaxisticksstep{3}
+% \def\shapescaling{0.12}
+% \input{figures/DiamondSizes}
 
 %% ##################################################################
 %% Further unused plots:

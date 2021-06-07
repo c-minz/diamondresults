@@ -11,16 +11,22 @@
 		x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, label={\ifdrawdiamondlinklabels\else number of center elements\fi}, ticks={step=\xaxisticksstep, node style={yshift=\xaxisticksshift}}},
 		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, label={\datalabel}, ticks={step=\yaxisticksstep, style={/pgf/number format/fixed, /pgf/number format/fixed zerofill, /pgf/number format/precision=\yaxisticksprecision}}},
 		all axes={grid},
-		visualize as line/.list={theoD2, theoD3, theoD4},
+		visualize as smooth line/.list={analytD2, analytD3, analytD4},
+		visualize as smooth line/.list={asympD2, asympD3, asympD4},
 		visualize as scatter/.list={D2, D3, D4},
-		style sheet=cross marks,
-		legend={right},
-		new legend entry={text={\textcolor{black}{\dataparam}}, node style={xshift=-2em}},
-		new legend entry={text={}},
-		new legend entry={text={sprinkling\\dimension $d$:}, node style={xshift=-2em, align=left}},
-		theoD2={style={D2Color}, label in legend={text={$1 + 1$}}},
-		theoD3={style={D3Color}, label in legend={text={$1 + 2$}}},
-		theoD4={style={D4Color}, label in legend={text={$1 + 3$}}},
+		legend={below, rows=3, right then down},
+		new legend entry={text={analytic:}, node style={align=left}},
+		analytD2={style={D2Color}, label in legend={text={$1 + 1$}}},
+		analytD3={style={D3Color}, label in legend={text={$1 + 2$}}},
+		analytD4={style={D4Color}, label in legend={text={$1 + 3$}}},
+		new legend entry={text={simulated:}, node style={align=left}},
+		D2={style={color=white, mark={|}, mark options={rotate=30, color=black}}, label in legend={text={$1 + 1$}, label in legend three marks}},
+		D3={style={color=white, mark={Mercedes star}}, label in legend={text={$1 + 2$}, label in legend three marks}},
+		D4={style={color=white, mark={+}}, label in legend={text={$1 + 3$}, label in legend three marks}},
+		new legend entry={text={asymptotic:}, node style={align=left}},
+		asympD2={style={D2Color, dashed}, label in legend={text={$1 + 1$}}},
+		asympD3={style={D3Color, dashed}, label in legend={text={$1 + 2$}}},
+		asympD4={style={D4Color, dashed}, label in legend={text={$1 + 3$}}},
 		];
 	\ifdrawdiamondlinklabels
 		\begin{scope}[yshift=\xaxisticksshift]
@@ -33,22 +39,38 @@
 		x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
 		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, ticks={none}},
 		all axes={grid=none},
-		visualize as line/.list={theoD2, theoD3, theoD4},
-		theoD2={style={D2Color}},
-		theoD3={style={D3Color}},
-		theoD4={style={D4Color}},
+		visualize as line/.list={asympD2, asympD3, asympD4},
+		asympD2={style={D2Color, dashed}},
+		asympD3={style={D3Color, dashed}},
+		asympD4={style={D4Color, dashed}},
 		data/format=xcutoff,
 		]
-		data [set=theoD2, read from file={\datadir/D2DiamondTimesN\dataN\dataSource.csv}]
-		data [set=theoD3, read from file={\datadir/D3DiamondTimesN\dataN\dataSource.csv}]
-		data [set=theoD4, read from file={\datadir/D4DiamondTimesN\dataN\dataSource.csv}];
+		data [set=asympD2, read from file={\datadir/D2DiamondTimes.csv}]
+		data [set=asympD3, read from file={\datadir/D3DiamondTimes.csv}]
+		data [set=asympD4, read from file={\datadir/D4DiamondTimes.csv}];
+	\datavisualization[
+		scientific axes=clean,
+		x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
+		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, ticks={none}},
+		all axes={grid=none},
+		visualize as line/.list={analytD2, analytD3, analytD4},
+		analytD2={style={D2Color}},
+		analytD3={style={D3Color}},
+		analytD4={style={D4Color}},
+		data/format=xcutoff,
+		]
+		data [set=analytD2, read from file={\datadir/D2DiamondTimesN\dataN\dataSource.csv}]
+		data [set=analytD3, read from file={\datadir/D3DiamondTimesN\dataN\dataSource.csv}]
+		data [set=analytD4, read from file={\datadir/D4DiamondTimesN\dataN\dataSource.csv}];
 	\datavisualization[
 		scientific axes=clean,
 		x axis={length=\xaxislength cm, min value=1, max value=\xaxismax, ticks={none}},
 		y axis={length=\yaxislength cm, min value=\yaxismin, max value=\yaxismax, ticks={none}},
 		all axes={grid=none},
 		visualize as scatter/.list={D2, D3, D4},
-		style sheet=cross marks,
+		D2={style={D2Color, mark={|}, mark options={rotate=30, color=black}}},
+		D3={style={D3Color, mark={Mercedes star}}},
+		D4={style={D4Color, mark={+}}},
 		data/format=\dataformat,
 		data/headline={x, y}
 		]
